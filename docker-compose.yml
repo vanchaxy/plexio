@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: .
+    env_file:
+      .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./plexio:/app/plexio
+    command: uvicorn plexio.main:app --host 0.0.0.0 --port 8000 --reload
+  frontend:
+    build:
+      context: frontend
+      dockerfile: local.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    command: npm start
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+volumes:
+  plexconfig:

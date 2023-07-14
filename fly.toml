@@ -1,0 +1,16 @@
+app = 'plexio'
+primary_region = 'iad'
+
+[build]
+  image = "ghcr.io/vanchaxy/plexio:0.0.1-rc1"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
