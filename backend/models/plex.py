@@ -55,8 +55,8 @@ class PlexMediaMeta(BaseModel):
     audience_rating: float | None = None
     originally_available_at: str | None = None
     added_at: int
-    updated_at: int
-    duration: int | None = NotImplementedError
+    updated_at: int | None = None
+    duration: int | None = None
     genres: list = Field(alias='Genre', default_factory=list)
     countries: list = Field(alias='Country', default_factory=list)
     directors: list = Field(alias='Director', default_factory=list)
