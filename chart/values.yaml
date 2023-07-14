@@ -1,0 +1,86 @@
+image:
+  repository: registry.ivanchenko.io/library/plexio
+  pullPolicy: IfNotPresent
+  tag: main
+
+frontapp:
+  image:
+    repository: registry.ivanchenko.io/library/plexio-frontapp
+    pullPolicy: IfNotPresent
+    tag: main
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  env:
+    - name: FOO
+      value: BAR
+
+env:
+  - name: FOO
+    value: BAR
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 7777
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  hosts:
+    - host: beta.plexio.stream
+      paths:
+        - path: /api/.*
+          pathType: Prefix
+          svcSuf: be
+          svcPort: 7777
+        - path: /.*json
+          pathType: Prefix
+          svcSuf: be
+          svcPort: 7777
+        - path: /.*
+          pathType: Prefix
+          svcSuf: fe
+          svcPort: 80
+  tls:
+    - secretName: plexio-tls
+      hosts:
+        - beta.plexio.stream
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+redis:
+  auth:
+    enabled: false
+    sentinel: false
+  replica:
+    replicaCount: 1

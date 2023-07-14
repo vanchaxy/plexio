@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: .
+    env_file:
+      .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+  frontend:
+    build:
+      context: frontend
+      dockerfile: local.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    command: npm start
+  plex:
+    image: plexinc/pms-docker
+    ports:
+      - "33333:32400"
+    volumes:
+      - ./dummy.mp4:/dummy/3u53SlRs3c - 1x1 - 3u53SlRs3c - 1080p.mp4
+      - plexconfig:/config
+    environment:
+      - ALLOWED_NETWORKS=172.17.0.0/12
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+volumes:
+  plexconfig:

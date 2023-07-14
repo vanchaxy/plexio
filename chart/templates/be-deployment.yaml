@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plexio.fullname" . }}-be
+  labels:
+    app.kubernetes.io/name: {{ include "plexio.name" . }}-be
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "plexio.name" . }}-be
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "plexio.name" . }}-be
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-dummy
+          image: busybox:1.36
+          command:
+            - 'wget'
+            - 'https://github.com/vanchaxy/plexio/raw/main/dummy.mp4'
+            - '-O'
+            - '/dummy/3u53SlRs3c - 1x1 - 3u53SlRs3c - 1080p.mp4'
+          volumeMounts:
+            - mountPath: /dummy
+              name: dummy
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SENTRY_RELEASE
+              value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+            {{- toYaml .Values.env | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: plex
+          image: plexinc/pms-docker
+          env:
+            - name: ALLOWED_NETWORKS
+              value: 127.0.0.1
+          volumeMounts:
+            - mountPath: /dummy
+              name: dummy
+            - name: plex-config
+              mountPath: /config
+      volumes:
+        - name: dummy
+          emptyDir: {}
+        - name: plex-config
+          persistentVolumeClaim:
+            claimName: plex-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

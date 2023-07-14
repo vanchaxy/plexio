@@ -1,0 +1,7 @@
+.ruff_cache
+*.egg-info
+.python-version
+/*.py
+.env
+
+frontend/node_modules

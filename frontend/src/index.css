@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    margin-right: 10px;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.user-name {
+    margin: 0;
+}
+
+.logout-btn {
+    background-color: #ff6666;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.configuration-form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+.select-field {
+    margin-bottom: 15px;
+}
+
+.label-row,
+.selector-row,
+.test-result-row {
+    display: flex;
+    align-items: center;
+}
+
+.select-field label {
+    margin-right: 10px;
+}
+
+.select-field select {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.test-btn {
+    background-color: #3399ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.test-result {
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.button-group {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.install-btn,
+.copy-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.copy-btn {
+    margin-left: 10px;
+}
+
+.faq-section {
+    font-family: Arial, sans-serif;
+}
+
+.faq-item {
+    margin-bottom: 10px;
+}
+
+summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::before {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+
+
