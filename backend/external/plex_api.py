@@ -60,4 +60,6 @@ async def get_servers(client: ClientSession, token: str) -> list[PlexServer]:
         },
     ) as response:
         json = await response.json()
-        return [PlexServer(**server) for server in json]
+        return [
+            PlexServer(**server) for server in json if 'server' in server['provides']
+        ]
