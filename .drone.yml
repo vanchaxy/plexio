@@ -32,7 +32,7 @@ steps:
     depends_on: [Build BE]
 
   - name: helm
-    image: alpine/helm:3.10.0
+    image: alpine/helm:3.13.1
     commands:
       - helm dependency build chart
       - chart=$$(helm package chart)
