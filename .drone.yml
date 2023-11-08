@@ -38,3 +38,7 @@ steps:
       - chart=$$(helm package chart)
       - helm push --plain-http $$(basename $${chart#*/}) oci://registry.registry.svc.cluster.local:5000
     depends_on: [clone]
+
+trigger:
+  branch:
+  - main
