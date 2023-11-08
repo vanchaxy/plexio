@@ -41,4 +41,6 @@ steps:
 
 trigger:
   branch:
-  - main
+    - main
+  event:
+    - push
