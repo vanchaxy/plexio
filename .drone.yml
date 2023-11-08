@@ -6,10 +6,13 @@ steps:
   - name: Build BE
     image: plugins/docker
     settings:
-      registry: registry.registry.svc.cluster.local:5000
-      insecure: true
-      repo: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}
-      cache_from: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}:main
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry: registry.ivanchenko.io
+      repo: registry.ivanchenko.io/${DRONE_REPO_NAME}
+      cache_from: registry.ivanchenko.io/${DRONE_REPO_NAME}:main
       tags:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
@@ -21,10 +24,13 @@ steps:
     settings:
       dockerfile: frontend/Dockerfile
       context: frontend/
-      registry: registry.registry.svc.cluster.local:5000
-      insecure: true
-      repo: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}-frontapp
-      cache_from: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}-frontapp:main
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry: registry.ivanchenko.io
+      repo: registry.ivanchenko.io/${DRONE_REPO_NAME}-frontapp
+      cache_from: registry.ivanchenko.io/${DRONE_REPO_NAME}-frontapp:main
       tags:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
@@ -32,9 +38,15 @@ steps:
     depends_on: [Build BE]
 
   - name: helm
-    image: alpine/helm:3.13.1
+    image: alpine/helm:3.10.0
+    environment:
+      REGISTRY_USERNAME:
+        from_secret: REGISTRY_USERNAME
+      REGISTRY_PASSWORD:
+        from_secret: REGISTRY_PASSWORD
     commands:
+      - helm registry login registry.ivanchenko.io -u $${REGISTRY_USERNAME} -p $${REGISTRY_PASSWORD}
       - helm dependency build chart
       - chart=$$(helm package chart)
-      - helm push --plain-http $$(basename $${chart#*/}) oci://registry.registry.svc.cluster.local:5000
+      - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
     depends_on: [clone]
