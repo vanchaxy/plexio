@@ -6,10 +6,10 @@ steps:
   - name: Build BE
     image: plugins/docker
     settings:
-      registry: http://registry.registry.svc.cluster.local:5000
+      registry: registry.registry.svc.cluster.local:5000
       insecure: true
-      repo: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}
-      cache_from: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}:main
+      repo: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}
+      cache_from: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}:main
       tags:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
