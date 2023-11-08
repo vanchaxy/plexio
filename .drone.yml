@@ -21,10 +21,10 @@ steps:
     settings:
       dockerfile: frontend/Dockerfile
       context: frontend/
-      registry: registry.registry.svc.cluster.local
+      registry: registry.registry.svc.cluster.local:5000
       insecure: true
-      repo: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}-frontapp
-      cache_from: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}-frontapp:main
+      repo: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}-frontapp
+      cache_from: registry.registry.svc.cluster.local:5000/${DRONE_REPO_NAME}-frontapp:main
       tags:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
