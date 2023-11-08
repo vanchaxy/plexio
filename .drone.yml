@@ -8,8 +8,8 @@ steps:
     settings:
       registry: http://registry.registry.svc.cluster.local
       insecure: true
-      repo: http://registry.registry.svc.cluster.local/${DRONE_REPO_NAME}
-      cache_from: http://registry.registry.svc.cluster.local/${DRONE_REPO_NAME}:main
+      repo: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}
+      cache_from: registry.registry.svc.cluster.local/${DRONE_REPO_NAME}:main
       tags:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
