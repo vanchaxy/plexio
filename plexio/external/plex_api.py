@@ -3,8 +3,8 @@ from http import HTTPStatus
 from aiohttp import ClientSession
 from yarl import URL
 
-from backend.models.plex import AuthPin, PlexServer, PlexUser
-from backend.settings import settings
+from plexio.models.plex import AuthPin, PlexServer, PlexUser
+from plexio.settings import settings
 
 PLEX_API_URL = URL('https://plex.tv/api/v2/')
 

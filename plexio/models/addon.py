@@ -5,7 +5,7 @@ from pydantic import (
 )
 from yarl import URL
 
-from backend.models.utils import to_camel
+from plexio.models.utils import to_camel
 
 
 class AddonConfiguration(BaseModel):

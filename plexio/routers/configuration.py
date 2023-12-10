@@ -4,10 +4,10 @@ from aiohttp import ClientSession
 from fastapi import APIRouter, Depends
 from yarl import URL
 
-from backend.dependencies import get_http_client, get_plex_auth_token
-from backend.external.plex_api import get_servers
-from backend.external.plex_media_server import check_server_connection
-from backend.models.plex import PlexServer
+from plexio.dependencies import get_http_client, get_plex_auth_token
+from plexio.external.plex_api import get_servers
+from plexio.external.plex_media_server import check_server_connection
+from plexio.models.plex import PlexServer
 
 router = APIRouter(prefix='/api/v1')
 

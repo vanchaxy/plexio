@@ -5,13 +5,13 @@ from aiohttp import ClientConnectorError, ClientSession
 from redis.asyncio.client import Redis
 from yarl import URL
 
-from backend.models.plex import (
+from plexio.models.plex import (
     PlexEpisodeMeta,
     PlexLibrarySection,
     PlexMediaMeta,
     PlexMediaType,
 )
-from backend.settings import settings
+from plexio.settings import settings
 
 TYPE_TO_DUMMY_ID = {}
 
@@ -126,6 +126,7 @@ async def get_dummy_media_id(*, client: ClientSession, media_type: PlexMediaType
     async with client.get(
         settings.matching_plex_address / 'library/all',
     ) as response:
+        print(await response.text())
         json = await response.json()
         metadata = json.get('MediaContainer', {}).get('Metadata', [])
         for meta in metadata:

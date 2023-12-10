@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.models.utils import to_camel
+from plexio.models.utils import to_camel
 
 
 class StremioMediaType(str, Enum):

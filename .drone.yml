@@ -22,8 +22,8 @@ steps:
   - name: Build FE
     image: plugins/docker
     settings:
-      dockerfile: frontend/Dockerfile
-      context: frontend/
+      dockerfile: webapp/Dockerfile
+      context: webapp/
       username:
         from_secret: REGISTRY_USERNAME
       password:

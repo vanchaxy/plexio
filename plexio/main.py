@@ -6,10 +6,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from redis.asyncio import Redis
 
-from backend.routers.addon import router as addon_router
-from backend.routers.auth import router as auth_router
-from backend.routers.configuration import router as configuration_router
-from backend.settings import settings
+from plexio.routers.addon import router as addon_router
+from plexio.routers.auth import router as auth_router
+from plexio.routers.configuration import router as configuration_router
+from plexio.settings import settings
 
 sentry_sdk.init()
 

@@ -1,34 +1,29 @@
 [project]
-name = "stremio_plex_addon"
+name = "plexio"
 readme = "README.md"
 requires-python = ">=3.11"
 version = "0.0.1"
 dependencies = [
-    "fastapi==0.100.0",
+    "fastapi==0.104.1",
     "pydantic-settings==2.0.1",
-    "yarl==1.9.2",
-    "uvicorn[standard]==0.22.0",
-    "aiohttp==3.8.4",
-    "redis==4.6.0",
-    "sentry-sdk[fastapi]==1.28.0"
+    "yarl==1.9.4",
+    "uvicorn==0.24.0",
+    "aiohttp==3.9.1",
+    "redis==5.0.1",
+    "sentry-sdk[fastapi]==1.38.0"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "ruff",
-    "black[d]",
+    "ruff==0.1.7"
 ]
 
 [tool.setuptools]
-packages = ["backend"]
+packages = ["plexio"]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
-
-[tool.black]
-line-length = 88
-skip-string-normalization = 1
 
 [tool.ruff]
 select = [
@@ -38,25 +33,14 @@ select = [
     "I",   # isort
     "C",   # flake8-comprehensions
     "B",   # flake8-bugbear
-    "Q",   # flake8-quotes
-    "COM", # flake8-commas
 ]
-ignore = [
-    "E501",  # line too long, handled by black
-]
-
-# Same as Black.
 line-length = 88
-
 target-version = "py311"
-
-[tool.ruff.flake8-quotes]
-avoid-escape = true
-docstring-quotes = "double"
-inline-quotes = "single"
-multiline-quotes = "single"
 
 [tool.ruff.isort]
 split-on-trailing-comma = true
 force-wrap-aliases = true
 combine-as-imports = true
+
+[tool.ruff.format]
+quote-style="single"

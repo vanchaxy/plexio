@@ -1,5 +1,5 @@
-from backend.models.plex import PlexMediaType
-from backend.models.stremio import StremioMediaType
+from plexio.models.plex import PlexMediaType
+from plexio.models.stremio import StremioMediaType
 
 PLEX_TO_STREMIO_MEDIA_TYPE = {
     PlexMediaType.show: StremioMediaType.series,

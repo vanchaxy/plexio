@@ -1,34 +1,32 @@
 from typing import Annotated
 
 from aiohttp import ClientSession
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio.client import Redis
 
-from backend.dependencies import (
+from plexio.dependencies import (
     get_addon_configuration,
     get_http_client,
     get_redis_client,
 )
-from backend.external.plex_media_server import (
+from plexio.external.plex_media_server import (
     get_all_episodes,
     get_media,
     get_section_media,
     get_sections,
     stremio_to_plex_id,
 )
-from backend.models import PLEX_TO_STREMIO_MEDIA_TYPE, STREMIO_TO_PLEX_MEDIA_TYPE
-from backend.models.addon import AddonConfiguration
-from backend.models.stremio import (
+from plexio.models import PLEX_TO_STREMIO_MEDIA_TYPE, STREMIO_TO_PLEX_MEDIA_TYPE
+from plexio.models.addon import AddonConfiguration
+from plexio.models.stremio import (
     StremioCatalog,
     StremioCatalogManifest,
     StremioManifest,
     StremioMediaType,
-    StremioMeta,
     StremioMetaPreview,
     StremioMetaResponse,
     StremioStream,
     StremioStreamsResponse,
-    StremioVideoMeta,
 )
 
 router = APIRouter()
@@ -44,7 +42,7 @@ async def get_manifest(
     ],
 ) -> StremioManifest:
     catalogs = []
-    description = 'Play movies and series from plex.tv'
+    description = 'Play movies and series from plex.tv.'
     name = 'Plexio'
 
     if configuration is not None:
@@ -155,27 +153,11 @@ async def get_meta(
         token=configuration.access_token,
         guid=plex_id,
     )
+    if not media:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     media = media[0]
 
-    meta = StremioMeta(
-        id=media.guid,
-        type=PLEX_TO_STREMIO_MEDIA_TYPE[media.type],
-        name=media.title,
-        releaseInfo=str(media.year),
-        imdbRating=media.audience_rating,
-        description=media.summary,
-        poster=str(
-            configuration.streaming_url
-            / media.thumb[1:]
-            % {'X-Plex-Token': configuration.access_token},
-        ),
-        background=str(
-            configuration.streaming_url
-            / (media.art or media.thumb)[1:]
-            % {'X-Plex-Token': configuration.access_token},
-        ),
-        genres=[g['tag'] for g in media.genres],
-    )
+    meta = media.to_stremio_meta(configuration)
 
     if stremio_type == StremioMediaType.series:
         episodes = await get_all_episodes(
@@ -186,22 +168,8 @@ async def get_meta(
         )
         videos = []
         for episode in episodes:
-            videos.append(
-                StremioVideoMeta(
-                    id=episode.guid,
-                    title=episode.title,
-                    released=f'{episode.originally_available_at}T00:00:00.000Z',
-                    thumbnail=str(
-                        configuration.streaming_url
-                        / media.thumb[1:]
-                        % {'X-Plex-Token': configuration.access_token},
-                    ),
-                    episode=episode.episode,
-                    season=episode.season,
-                    overview=episode.summary,
-                ),
-            )
-            meta.videos = videos
+            videos.append(episode.to_stremio_video_meta(configuration))
+        meta.videos = videos
     return StremioMetaResponse(meta=meta)
 
 
