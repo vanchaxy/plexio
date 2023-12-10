@@ -9,13 +9,6 @@ from plexio.dependencies import (
     get_http_client,
     get_redis_client,
 )
-from plexio.external.plex_media_server import (
-    get_all_episodes,
-    get_media,
-    get_section_media,
-    get_sections,
-    stremio_to_plex_id,
-)
 from plexio.models import PLEX_TO_STREMIO_MEDIA_TYPE, STREMIO_TO_PLEX_MEDIA_TYPE
 from plexio.models.addon import AddonConfiguration
 from plexio.models.stremio import (
@@ -28,12 +21,19 @@ from plexio.models.stremio import (
     StremioStream,
     StremioStreamsResponse,
 )
+from plexio.plex.media_server_api import (
+    get_all_episodes,
+    get_media,
+    get_section_media,
+    get_sections,
+    stremio_to_plex_id,
+)
 
 router = APIRouter()
 
 
-@router.get('/manifest.json')
-@router.get('/{base64_cfg}/manifest.json')
+@router.get('/manifest.json', response_model_exclude_none=True)
+@router.get('/{base64_cfg}/manifest.json', response_model_exclude_none=True)
 async def get_manifest(
     http: Annotated[ClientSession, Depends(get_http_client)],
     configuration: Annotated[
@@ -93,9 +93,18 @@ async def get_manifest(
     )
 
 
-@router.get('/{base64_cfg}/catalog/{stremio_type}/{catalog_id}.json')
-@router.get('/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/skip={skip}.json')
-@router.get('/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/search={search}.json')
+@router.get(
+    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}.json',
+    response_model_exclude_none=True,
+)
+@router.get(
+    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/skip={skip}.json',
+    response_model_exclude_none=True,
+)
+@router.get(
+    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/search={search}.json',
+    response_model_exclude_none=True,
+)
 async def get_catalog(
     http: Annotated[ClientSession, Depends(get_http_client)],
     configuration: Annotated[AddonConfiguration, Depends(get_addon_configuration)],
@@ -133,14 +142,16 @@ async def get_catalog(
             type=PLEX_TO_STREMIO_MEDIA_TYPE[meta.type],
             imdbRating=meta.audience_rating,
             description=meta.summary,
-            genres=[g['tag'] for g in meta.genres],
+            genres=[g['tag'] for g in meta.genre],
         )
         metas.append(meta_preview)
-
     return StremioCatalog(metas=metas)
 
 
-@router.get('/{base64_cfg}/meta/{stremio_type}/{plex_id:path}.json')
+@router.get(
+    '/{base64_cfg}/meta/{stremio_type}/{plex_id:path}.json',
+    response_model_exclude_none=True,
+)
 async def get_meta(
     http: Annotated[ClientSession, Depends(get_http_client)],
     configuration: Annotated[AddonConfiguration, Depends(get_addon_configuration)],
@@ -152,6 +163,7 @@ async def get_meta(
         url=configuration.discovery_url,
         token=configuration.access_token,
         guid=plex_id,
+        get_only_first=True,
     )
     if not media:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -173,7 +185,10 @@ async def get_meta(
     return StremioMetaResponse(meta=meta)
 
 
-@router.get('/{base64_cfg}/stream/{stremio_type}/{media_id:path}.json')
+@router.get(
+    '/{base64_cfg}/stream/{stremio_type}/{media_id:path}.json',
+    response_model_exclude_none=True,
+)
 async def get_stream(
     http: Annotated[ClientSession, Depends(get_http_client)],
     redis: Annotated[Redis, Depends(get_redis_client)],
@@ -201,11 +216,12 @@ async def get_stream(
         token=configuration.access_token,
         guid=plex_id,
     )
+
     return StremioStreamsResponse(
         streams=[
             StremioStream(
-                name=f'{configuration.server_name} {meta.section}',
-                title=f'{meta.title}\n{meta.year}',
+                name=f'{configuration.server_name} {meta.library_section_title}',
+                description=f'{meta.title}\n{meta.year}',
                 url=str(
                     configuration.streaming_url
                     / 'video/:/transcode/universal/start.m3u8'

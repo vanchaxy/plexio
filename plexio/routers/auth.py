@@ -6,8 +6,8 @@ from fastapi.responses import RedirectResponse
 from yarl import URL
 
 from plexio.dependencies import get_http_client, get_plex_auth_token
-from plexio.external.plex_api import create_auth_pin, get_auth_token, get_user
 from plexio.models.plex import AuthPin, PlexUser
+from plexio.plex.plextv_api import create_auth_pin, get_auth_token, get_user
 from plexio.settings import settings
 
 router = APIRouter(prefix='/api/v1')

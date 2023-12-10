@@ -11,6 +11,7 @@ from plexio.models.plex import (
     PlexMediaMeta,
     PlexMediaType,
 )
+from plexio.plex.utils import get_json
 from plexio.settings import settings
 
 TYPE_TO_DUMMY_ID = {}
@@ -28,7 +29,7 @@ async def check_server_connection(
             params={
                 'X-Plex-Token': token,
             },
-            timeout=5,
+            timeout=settings.plex_requests_timeout,
         ) as response:
             if response.status != HTTPStatus.OK:
                 return False
@@ -43,18 +44,18 @@ async def get_sections(
     url: URL,
     token: str,
 ) -> list[PlexLibrarySection]:
-    async with client.get(
-        url / 'library/sections',
+    json = await get_json(
+        client=client,
+        url=url / 'library/sections',
         params={
             'X-Plex-Token': token,
         },
-    ) as response:
-        json = await response.json()
-        return [
-            PlexLibrarySection(**section)
-            for section in json['MediaContainer']['Directory']
-            if section['type'] in {PlexMediaType.movie, PlexMediaType.show}
-        ]
+    )
+    return [
+        PlexLibrarySection(**section)
+        for section in json['MediaContainer']['Directory']
+        if section['type'] in {PlexMediaType.movie, PlexMediaType.show}
+    ]
 
 
 async def get_section_media(
@@ -74,13 +75,13 @@ async def get_section_media(
     }
     if search:
         params['title'] = search
-    async with client.get(
-        url / 'library/sections' / section_id / 'all',
+    json = await get_json(
+        client=client,
+        url=url / 'library/sections' / section_id / 'all',
         params=params,
-    ) as response:
-        json = await response.json()
-        metadata = json['MediaContainer'].get('Metadata', [])
-        return [PlexMediaMeta(**meta) for meta in metadata]
+    )
+    metadata = json['MediaContainer'].get('Metadata', [])
+    return [PlexMediaMeta(**meta) for meta in metadata]
 
 
 async def get_media(
@@ -89,17 +90,32 @@ async def get_media(
     url: URL,
     token: str,
     guid: str,
+    get_only_first=False,
 ) -> list[PlexMediaMeta]:
-    async with client.get(
-        url / 'library/all',
+    json = await get_json(
+        client=client,
+        url=url / 'library/all',
         params={
             'guid': guid,
             'X-Plex-Token': token,
         },
-    ) as response:
-        json = await response.json()
-        metadata = json['MediaContainer'].get('Metadata', [])
-        return [PlexMediaMeta(**meta) for meta in metadata]
+    )
+    media_sections = json['MediaContainer'].get('Metadata', [])
+    media_metas = []
+    for section in media_sections:
+        json = await get_json(
+            client=client,
+            url=url / 'library/metadata' / section['ratingKey'],
+            params={
+                'X-Plex-Token': token,
+                'includeElements': 'Stream',
+            },
+        )
+        metadata = json['MediaContainer']['Metadata'][0]
+        media_metas.append(PlexMediaMeta(**metadata))
+        if get_only_first:
+            break
+    return media_metas
 
 
 async def get_all_episodes(
@@ -109,30 +125,29 @@ async def get_all_episodes(
     token: str,
     key: str,
 ) -> list[PlexEpisodeMeta]:
-    async with client.get(
-        str(url / key[1:]).replace('/children', '/allLeaves'),
+    json = await get_json(
+        client=client,
+        url=str(url / key[1:]).replace('/children', '/allLeaves'),
         params={
             'X-Plex-Token': token,
         },
-    ) as response:
-        json = await response.json()
-        metadata = json['MediaContainer'].get('Metadata', [])
-        return [PlexEpisodeMeta(**meta) for meta in metadata]
+    )
+    metadata = json['MediaContainer'].get('Metadata', [])
+    return [PlexEpisodeMeta(**meta) for meta in metadata]
 
 
 async def get_dummy_media_id(*, client: ClientSession, media_type: PlexMediaType):
     if dummy_id := TYPE_TO_DUMMY_ID.get(media_type):
         return dummy_id
-    async with client.get(
-        settings.matching_plex_address / 'library/all',
-    ) as response:
-        print(await response.text())
-        json = await response.json()
-        metadata = json.get('MediaContainer', {}).get('Metadata', [])
-        for meta in metadata:
-            if meta['type'] == media_type:
-                TYPE_TO_DUMMY_ID[media_type] = meta['ratingKey']
-                return meta['ratingKey']
+    json = await get_json(
+        client=client,
+        url=settings.matching_plex_address / 'library/all',
+    )
+    metadata = json.get('MediaContainer', {}).get('Metadata', [])
+    for meta in metadata:
+        if meta['type'] == media_type:
+            TYPE_TO_DUMMY_ID[media_type] = meta['ratingKey']
+            return meta['ratingKey']
 
 
 async def imdb_to_plex_id(
@@ -145,14 +160,15 @@ async def imdb_to_plex_id(
         client=client,
         media_type=media_type,
     )
-    async with client.get(
-        settings.matching_plex_address / f'library/metadata/{dummy_media_id}/matches',
+    json = await get_json(
+        client=client,
+        url=settings.matching_plex_address
+        / f'library/metadata/{dummy_media_id}/matches',
         params={
             'manual': 1,
             'title': f'imdb-{imdb_id}',
         },
-    ) as response:
-        json = await response.json()
+    )
     guid = json['MediaContainer']['SearchResult'][0]['guid']
     return guid
 

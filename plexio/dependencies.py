@@ -7,8 +7,8 @@ from fastapi import Cookie, Depends, HTTPException, Request, status
 from redis.asyncio.client import Redis
 from sentry_sdk import set_user
 
-from plexio.external.plex_api import get_user
 from plexio.models.addon import AddonConfiguration
+from plexio.plex.plextv_api import get_user
 
 
 def get_http_client(request: Request) -> ClientSession:

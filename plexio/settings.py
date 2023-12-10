@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     )
     matching_plex_address: URL = f'http://{gethostbyname("plex")}:32400'
     redis_host: str = 'redis'
+    plex_requests_timeout: int = 5
 
     _extract_matching_plex_address = field_validator(
         'matching_plex_address',
