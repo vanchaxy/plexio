@@ -11,14 +11,14 @@ class Settings(BaseSettings):
     cors_origin_regex: str = (
         r'https?:\/\/localhost:\d+|.*plexio.stream|.*strem.io|.*stremio.com'
     )
-    matching_plex_address: URL = f'http://{gethostbyname("plex")}:32400'
+    matching_plex_address: URL = 'http://localhost:32400'
     redis_host: str = 'redis'
     plex_requests_timeout: int = 5
 
     _extract_matching_plex_address = field_validator(
         'matching_plex_address',
         mode='before',
-    )(URL)
+    )(lambda u: URL(u).with_host(gethostbyname(URL(u).host)))
 
 
 settings = Settings()
