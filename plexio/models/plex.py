@@ -100,12 +100,16 @@ class PlexMediaMeta(BaseModel):
                 configuration.streaming_url
                 / self.thumb[1:]
                 % {'X-Plex-Token': configuration.access_token},
-            ),
+            )
+            if self.thumb
+            else None,
             background=str(
                 configuration.streaming_url
                 / (self.art or self.thumb)[1:]
                 % {'X-Plex-Token': configuration.access_token},
-            ),
+            )
+            if (self.art or self.thumb)
+            else None,
             genres=[g['tag'] for g in self.genre],
         )
 
@@ -127,7 +131,9 @@ class PlexMediaMeta(BaseModel):
                 configuration.streaming_url
                 / self.thumb[1:]
                 % {'X-Plex-Token': configuration.access_token},
-            ),
+            )
+            if self.thumb
+            else None,
             type=PLEX_TO_STREMIO_MEDIA_TYPE[self.type],
             imdbRating=self.audience_rating,
             description=self.summary,
@@ -170,7 +176,7 @@ class PlexMediaMeta(BaseModel):
                             'X-Plex-Token': configuration.access_token,
                         },
                     ),
-                    behavior_hints={},
+                    behavior_hints={'bingeGroup': quality_description},
                 )
             )
 
@@ -197,7 +203,7 @@ class PlexMediaMeta(BaseModel):
                         quality=quality_description
                     ),
                     url=str(transcode_url % {'videoQuality': 100}),
-                    behavior_hints={},
+                    behavior_hints={'bingeGroup': quality_description},
                 )
             )
 
@@ -212,7 +218,7 @@ class PlexMediaMeta(BaseModel):
                             quality=quality_description
                         ),
                         url=str(transcode_url % quality['plex_args']),
-                        behavior_hints={},
+                        behavior_hints={'bingeGroup': quality_description},
                     )
                 )
 
@@ -269,7 +275,9 @@ class PlexEpisodeMeta(BaseModel):
                 configuration.streaming_url
                 / self.thumb[1:]
                 % {'X-Plex-Token': configuration.access_token},
-            ),
+            )
+            if self.thumb
+            else None,
             episode=self.index,
             season=self.parent_index,
             overview=self.summary,
