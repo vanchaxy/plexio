@@ -2,7 +2,7 @@
 name = "plexio"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "0.0.1"
+dynamic = ["version"]
 dependencies = [
     "fastapi==0.104.1",
     "pydantic-settings==2.0.1",
@@ -17,6 +17,9 @@ dependencies = [
 dev = [
     "ruff==0.1.7"
 ]
+
+[tool.hatch.version]
+path = "plexio/__init__.py"
 
 [tool.setuptools]
 packages = ["plexio"]

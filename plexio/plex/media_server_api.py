@@ -189,7 +189,7 @@ async def get_episode_guid(
         key=show_guid,
     )
     for metadata in all_episodes:
-        if str(metadata.season) == season and str(metadata.episode) == episode:
+        if str(metadata.parent_index) == season and str(metadata.index) == episode:
             return metadata.guid
 
 

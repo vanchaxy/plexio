@@ -1,9 +1,11 @@
+from itertools import chain
 from typing import Annotated
 
 from aiohttp import ClientSession
 from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio.client import Redis
 
+from plexio import __version__
 from plexio.dependencies import (
     get_addon_configuration,
     get_http_client,
@@ -16,9 +18,7 @@ from plexio.models.stremio import (
     StremioCatalogManifest,
     StremioManifest,
     StremioMediaType,
-    StremioMetaPreview,
     StremioMetaResponse,
-    StremioStream,
     StremioStreamsResponse,
 )
 from plexio.plex.media_server_api import (
@@ -70,7 +70,7 @@ async def get_manifest(
 
     return StremioManifest(
         id='com.stremio.plexio',
-        version='0.0.1',
+        version=__version__,
         description=description,
         name=name,
         resources=[
@@ -121,31 +121,9 @@ async def get_catalog(
         search=search,
         skip=skip,
     )
-
-    metas = []
-    for meta in media:
-        imdb_id = None
-        guids = meta.guids
-        for guid in guids:
-            if guid['id'].startswith('imdb://'):
-                imdb_id = guid['id'][7:]
-
-        meta_preview = StremioMetaPreview(
-            id=imdb_id or meta.guid,
-            name=meta.title,
-            releaseInfo=str(meta.year),
-            poster=str(
-                configuration.streaming_url
-                / meta.thumb[1:]
-                % {'X-Plex-Token': configuration.access_token},
-            ),
-            type=PLEX_TO_STREMIO_MEDIA_TYPE[meta.type],
-            imdbRating=meta.audience_rating,
-            description=meta.summary,
-            genres=[g['tag'] for g in meta.genre],
-        )
-        metas.append(meta_preview)
-    return StremioCatalog(metas=metas)
+    return StremioCatalog(
+        metas=[m.to_stremio_meta_review(configuration) for m in media]
+    )
 
 
 @router.get(
@@ -178,10 +156,7 @@ async def get_meta(
             token=configuration.access_token,
             key=media.key,
         )
-        videos = []
-        for episode in episodes:
-            videos.append(episode.to_stremio_video_meta(configuration))
-        meta.videos = videos
+        meta.videos = [e.to_stremio_video_meta(configuration) for e in episodes]
     return StremioMetaResponse(meta=meta)
 
 
@@ -216,29 +191,8 @@ async def get_stream(
         token=configuration.access_token,
         guid=plex_id,
     )
-
     return StremioStreamsResponse(
-        streams=[
-            StremioStream(
-                name=f'{configuration.server_name} {meta.library_section_title}',
-                description=f'{meta.title}\n{meta.year}',
-                url=str(
-                    configuration.streaming_url
-                    / 'video/:/transcode/universal/start.m3u8'
-                    % {
-                        'path': meta.key,
-                        'mediaIndex': 0,
-                        'partIndex': 0,
-                        'protocol': 'hls',
-                        'fastSeek': 1,
-                        'copyts': 1,
-                        'offset': 0,
-                        'X-Plex-Platform': 'Chrome',
-                        'X-Plex-Token': configuration.access_token,
-                    },
-                ),
-                behavior_hints={},
-            )
-            for meta in media
-        ],
+        streams=chain.from_iterable(
+            meta.get_stremio_streams(configuration) for meta in media
+        ),
     )
