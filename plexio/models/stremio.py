@@ -68,7 +68,7 @@ class StremioStream(StremioBase):
 
     name: str
     description: str
-    subtitles: list = Field(default_factory=list)
+    subtitles: list | None = None
     behavior_hints: StremioStreamBehaviorHints | None = None
 
 
