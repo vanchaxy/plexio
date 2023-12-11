@@ -63,4 +63,8 @@ async def get_servers(client: ClientSession, token: str) -> list[PlexServer]:
             'X-Plex-Client-Identifier': settings.identifier,
         },
     )
-    return [PlexServer(**server) for server in json if 'server' in server['provides']]
+    return [
+        PlexServer(**server)
+        for server in json
+        if 'server' in server['provides'] and 'accessToken' in server
+    ]
