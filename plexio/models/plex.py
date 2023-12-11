@@ -176,7 +176,7 @@ class PlexMediaMeta(BaseModel):
                             'X-Plex-Token': configuration.access_token,
                         },
                     ),
-                    behavior_hints={'bingeGroup': quality_description},
+                    behaviorHints={'bingeGroup': quality_description},
                 )
             )
 
@@ -203,7 +203,7 @@ class PlexMediaMeta(BaseModel):
                         quality=quality_description
                     ),
                     url=str(transcode_url % {'videoQuality': 100}),
-                    behavior_hints={'bingeGroup': quality_description},
+                    behaviorHints={'bingeGroup': quality_description},
                 )
             )
 
@@ -218,7 +218,7 @@ class PlexMediaMeta(BaseModel):
                             quality=quality_description
                         ),
                         url=str(transcode_url % quality['plex_args']),
-                        behavior_hints={'bingeGroup': quality_description},
+                        behaviorHints={'bingeGroup': quality_description},
                     )
                 )
 
