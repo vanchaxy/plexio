@@ -1,6 +1,8 @@
 services:
   backend:
     build: .
+    environment:
+      - MATCHING_PLEX_ADDRESS=http://plex:32400
     env_file:
       .env
     ports:
