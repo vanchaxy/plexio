@@ -152,9 +152,13 @@ class PlexMediaMeta(BaseModel):
             subtitles_languages = set()
             for part_stream in media['Part'][0]['Stream']:
                 if part_stream['streamType'] == 2:
-                    audio_languages.add(get_flag_emoji(part_stream.get('languageTag', 'Unknown')))
+                    audio_languages.add(
+                        get_flag_emoji(part_stream.get('languageTag', 'Unknown'))
+                    )
                 elif part_stream['streamType'] == 3:
-                    subtitles_languages.add(get_flag_emoji(part_stream.get('languageTag', 'Unknown')))
+                    subtitles_languages.add(
+                        get_flag_emoji(part_stream.get('languageTag', 'Unknown'))
+                    )
 
             description_template = (
                 f'{filename}\n'
@@ -228,22 +232,24 @@ class PlexMediaMeta(BaseModel):
 class PlexEpisodeMeta(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
-    rating_key: str
-    key: str
-    parent_rating_key: str
-    grandparent_rating_key: str
     guid: str
-    studio: str
-    type: str
     title: str
-    grandparent_key: str
-    parent_key: str
-    grandparent_title: str
-    parent_title: str
-    content_rating: str
-    summary: str
     index: int
     parent_index: int
+    added_at: int
+
+    type: str | None = None
+    rating_key: str | None = None
+    key: str | None = None
+    parent_rating_key: str | None = None
+    grandparent_rating_key: str | None = None
+    studio: str | None = None
+    grandparent_key: str | None = None
+    parent_key: str | None = None
+    grandparent_title: str | None = None
+    parent_title: str | None = None
+    content_rating: str | None = None
+    summary: str = ''
     year: int | None = None
     thumb: str | None = None
     art: str | None = None
@@ -253,7 +259,6 @@ class PlexEpisodeMeta(BaseModel):
     grandparent_theme: str | None = None
     duration: int | None = None
     originally_available_at: str | None = None
-    added_at: int
     updated_at: int | None = None
     media: list = Field(default_factory=list)
 
