@@ -152,9 +152,9 @@ class PlexMediaMeta(BaseModel):
             subtitles_languages = set()
             for part_stream in media['Part'][0]['Stream']:
                 if part_stream['streamType'] == 2:
-                    audio_languages.add(get_flag_emoji(part_stream['languageTag']))
+                    audio_languages.add(get_flag_emoji(part_stream.get('languageTag', 'Unknown')))
                 elif part_stream['streamType'] == 3:
-                    subtitles_languages.add(get_flag_emoji(part_stream['languageTag']))
+                    subtitles_languages.add(get_flag_emoji(part_stream.get('languageTag', 'Unknown')))
 
             description_template = (
                 f'{filename}\n'
