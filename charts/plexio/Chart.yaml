@@ -2,7 +2,7 @@
 apiVersion: v2
 description: A chart to power Plexio (plexio.stream) running on kubernetes
 name: plexio
-version: 0.2.0
+version: 0.2.1
 appVersion: 0.0.2
 home: https://plexio.stream/
 icon: https://raw.githubusercontent.com/vanchaxy/plexio/main/webapp/public/logo512.png
