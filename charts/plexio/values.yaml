@@ -39,12 +39,12 @@ server:
           image:
             repository: ghcr.io/plexio/plexio-server
             pullPolicy: IfNotPresent
-          env:
-            REDIS_HOST: 'redis-master'
-            MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
-            SENTRY_DSN: sentry-secret
-            SENTRY_ENVIRONMENT: 'local'
-            CORS_ORIGIN_REGEX: '.*plexio.local|.*strem.io|.*stremio.com'
+#          env:
+#            REDIS_HOST: 'redis-master'
+#            MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
+#            SENTRY_DSN: sentry-secret
+#            SENTRY_ENVIRONMENT: 'local'
+#            CORS_ORIGIN_REGEX: '.*plexio.local|.*strem.io|.*stremio.com'
 
   ingress:
     main:
