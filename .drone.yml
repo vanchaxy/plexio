@@ -50,3 +50,17 @@ steps:
       - chart=$$(helm package chart)
       - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
     depends_on: [clone]
+
+  - name: new helm
+    image: alpine/helm:3.10.0
+    environment:
+      REGISTRY_USERNAME:
+        from_secret: REGISTRY_USERNAME
+      REGISTRY_PASSWORD:
+        from_secret: REGISTRY_PASSWORD
+    commands:
+      - helm registry login registry.ivanchenko.io -u $${REGISTRY_USERNAME} -p $${REGISTRY_PASSWORD}
+      - helm dependency build charts/plexio
+      - chart=$$(helm package charts/plexio)
+      - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
+    depends_on: [clone]
