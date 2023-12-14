@@ -1,0 +1,29 @@
+apiVersion: v1
+entries:
+  plexio:
+  - apiVersion: v2
+    appVersion: 0.0.2
+    created: "2023-12-14T12:08:05.771285135Z"
+    dependencies:
+    - name: common
+      repository: https://bjw-s.github.io/helm-charts
+      version: 2.3.0
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.5.0
+    description: A chart to power Plexio (plexio.stream) running on kubernetes
+    digest: 7216447c1f5481fc0f08a1552d19494f94549560ce45b6e1bb2cb8444044d3c7
+    home: https://plexio.stream/
+    icon: https://raw.githubusercontent.com/vanchaxy/plexio/main/webapp/public/logo512.png
+    maintainers:
+    - email: plexio@ivanchenko.io
+      name: vanchaxy
+    name: plexio
+    sources:
+    - https://github.com/vanchaxy/plexio/tree/main/charts/plexio
+    - https://github.com/vanchaxy/plexio
+    urls:
+    - https://github.com/vanchaxy/plexio/releases/download/plexio-chart-0.2.0/plexio-0.2.0.tgz
+    version: 0.2.0
+generated: "2023-12-14T12:08:05.771294432Z"
