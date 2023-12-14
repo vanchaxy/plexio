@@ -1,0 +1,88 @@
+## This chart relies on the common library chart from bjw-s
+## You can find it at https://github.com/bjw-s/helm-charts/tree/main/charts/library/common
+## Refer there for more detail about the supported values
+
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          tag: 0.0.2rc1
+
+redis:
+  enabled: false
+  architecture: standalone
+  auth:
+    enabled: false
+
+plex-matcher:
+  enabled: true
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/linuxserver/plex
+            tag: 1.32.8
+            pullPolicy: IfNotPresent
+          env:
+            ALLOWED_NETWORKS: 10.0.0.0/255.0.0.0
+
+server:
+  enabled: true
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/plexio/plexio-server
+            pullPolicy: IfNotPresent
+          env:
+            REDIS_HOST: 'plexio-redis-master'
+            MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
+            SENTRY_DSN: sentry-secret
+            SENTRY_ENVIRONMENT: 'beta'
+            CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
+
+  ingress:
+    main:
+      enabled: false
+      annotations: {}
+      hosts:
+        - host: plexio.local
+          paths:
+            - path: /api/.*
+              pathType: Prefix
+              service:
+                name: main
+            - path: /.*json
+              pathType: Prefix
+              service:
+                name: main
+      tls: []
+
+frontend:
+  enabled: true
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/plexio/plexio-frontend
+            pullPolicy: IfNotPresent
+
+  ingress:
+    main:
+      enabled: false
+      annotations: {}
+      hosts:
+        - host: plexio.local
+          paths:
+            - path: /.*
+              pathType: Prefix
+              service:
+                name: main
+      tls: []

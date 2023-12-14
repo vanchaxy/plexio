@@ -4,4 +4,4 @@
 /*.py
 .env
 
-webapp/node_modules
+frontend/node_modules

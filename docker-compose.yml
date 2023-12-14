@@ -12,13 +12,13 @@ services:
     command: uvicorn plexio.main:app --host 0.0.0.0 --port 8000 --reload
   frontend:
     build:
-      context: webapp
+      context: frontend
       dockerfile: local.Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./webapp/src:/app/src
-      - ./webapp/public:/app/public
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
     command: npm start
   plex:
     image: plexinc/pms-docker
