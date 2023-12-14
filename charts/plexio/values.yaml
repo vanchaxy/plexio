@@ -7,7 +7,7 @@ controllers:
     containers:
       main:
         image:
-          tag: 0.0.2rc1
+          tag: 0.0.2
 
 redis:
   enabled: true
