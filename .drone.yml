@@ -22,8 +22,8 @@ steps:
   - name: Build FE
     image: plugins/docker
     settings:
-      dockerfile: webapp/Dockerfile
-      context: webapp/
+      dockerfile: frontend/Dockerfile
+      context: frontend/
       username:
         from_secret: REGISTRY_USERNAME
       password:
@@ -46,7 +46,7 @@ steps:
         from_secret: REGISTRY_PASSWORD
     commands:
       - helm registry login registry.ivanchenko.io -u $${REGISTRY_USERNAME} -p $${REGISTRY_PASSWORD}
-      - helm dependency build chart
-      - chart=$$(helm package chart)
+      - helm dependency build charts/plexio
+      - chart=$$(helm package charts/plexio)
       - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
     depends_on: [clone]
