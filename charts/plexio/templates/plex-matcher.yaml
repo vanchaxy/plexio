@@ -29,8 +29,8 @@ controllers:
     initContainers:
       init-dummy:
         image:
-          repository: docker.io
-          tag: busybox:1.36
+          repository: docker.io/busybox
+          tag: 1.36
           pullPolicy: IfNotPresent
         command:
           - 'wget'
