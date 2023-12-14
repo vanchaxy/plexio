@@ -10,7 +10,7 @@ controllers:
           tag: 0.0.2rc1
 
 redis:
-  enabled: false
+  enabled: true
   architecture: standalone
   auth:
     enabled: false
