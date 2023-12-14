@@ -23,8 +23,8 @@ plex-matcher:
       containers:
         main:
           image:
-            repository: ghcr.io/linuxserver/plex
-            tag: 1.32.8
+            repository: plexinc/pms-docker
+            tag: 1.32.8.7639-fb6452ebf
             pullPolicy: IfNotPresent
           env:
             ALLOWED_NETWORKS: 10.0.0.0/255.0.0.0
@@ -40,11 +40,11 @@ server:
             repository: ghcr.io/plexio/plexio-server
             pullPolicy: IfNotPresent
           env:
-            REDIS_HOST: 'plexio-redis-master'
+            REDIS_HOST: 'redis-master'
             MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
             SENTRY_DSN: sentry-secret
-            SENTRY_ENVIRONMENT: 'beta'
-            CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
+            SENTRY_ENVIRONMENT: 'local'
+            CORS_ORIGIN_REGEX: '.*plexio.local|.*strem.io|.*stremio.com'
 
   ingress:
     main:
