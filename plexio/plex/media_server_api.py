@@ -202,9 +202,12 @@ async def stremio_to_plex_id(
     stremio_id: str,
     media_type: PlexMediaType,
 ) -> str | None:
-    if cached_plex_id := await redis.get(stremio_id):
-        return cached_plex_id.decode()
-
+    try:
+        if cached_plex_id := await redis.get(stremio_id):
+            return cached_plex_id.decode()
+    except Exception:
+        pass # TODO logging error
+ 
     if media_type == PlexMediaType.show:
         imdb_id, season, episode = stremio_id.split(':')
     else:
