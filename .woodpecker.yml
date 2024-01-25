@@ -1,5 +1,5 @@
 steps:
-  - name: Build BE
+  - name: build-be
     image: woodpeckerci/plugin-docker-buildx
     settings:
       username:
@@ -8,7 +8,6 @@ steps:
         from_secret: REGISTRY_PASSWORD
       registry: registry.ivanchenko.io
       repo: registry.ivanchenko.io/${CI_REPO_NAME}
-      platforms: linux/amd64
       cache_from: registry.ivanchenko.io/${CI_REPO_NAME}:main
       tags:
         - ${CI_COMMIT_BRANCH/\//-}
