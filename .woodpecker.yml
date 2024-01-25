@@ -13,6 +13,7 @@ steps:
         - ${CI_COMMIT_BRANCH/\//-}
         - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
       mtu: 1000
+    depends_on: [clone]
 
   - name: build-fe
     image: woodpeckerci/plugin-docker-buildx
@@ -30,11 +31,13 @@ steps:
         - ${CI_COMMIT_BRANCH/\//-}
         - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
       mtu: 1000
+    depends_on: [clone]
 
   - name: helm
     image: alpine/helm:3.10.0
     commands:
-      - helm registry login registry.ivanchenko.io -u $${REGISTRY_USERNAME} -p $${REGISTRY_PASSWORD}
+      - helm registry login registry.ivanchenko.io -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD}
       - helm dependency build charts/plexio
-      - chart=$$(helm package charts/plexio)
-      - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
+      - chart=$(helm package charts/plexio)
+      - helm push $(basename ${chart#*/}) oci://registry.ivanchenko.io
+    depends_on: [clone]
