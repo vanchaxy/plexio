@@ -42,4 +42,3 @@ steps:
       # - helm dependency build charts/plexio
       # - chart=$(helm package charts/plexio)
       # - helm push $(basename ${chart#*/}) oci://registry.ivanchenko.io
-    depends_on: [clone]
