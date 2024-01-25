@@ -35,6 +35,7 @@ steps:
 
   - name: helm
     image: alpine/helm:3.10.0
+    secrets: [ REGISTRY_USERNAME, REGISTRY_PASSWORD ]
     commands:
       - helm registry login registry.ivanchenko.io -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD}
       - helm dependency build charts/plexio
