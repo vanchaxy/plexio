@@ -13,7 +13,6 @@ steps:
         - ${CI_COMMIT_BRANCH/\//-}
         - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
       mtu: 1000
-    depends_on: [clone]
 
   - name: build-fe
     image: woodpeckerci/plugin-docker-buildx
@@ -31,4 +30,3 @@ steps:
         - ${CI_COMMIT_BRANCH/\//-}
         - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
       mtu: 1000
-    depends_on: [clone]
