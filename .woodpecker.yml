@@ -1,44 +1,45 @@
 steps:
-  - name: build-be
-    image: woodpeckerci/plugin-docker-buildx
-    settings:
-      username:
-        from_secret: REGISTRY_USERNAME
-      password:
-        from_secret: REGISTRY_PASSWORD
-      registry: registry.ivanchenko.io
-      repo: registry.ivanchenko.io/${CI_REPO_NAME}
-      cache_from: registry.ivanchenko.io/${CI_REPO_NAME}:main
-      tags:
-        - ${CI_COMMIT_BRANCH/\//-}
-        - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
-      mtu: 1000
-    depends_on: [clone]
+  # - name: build-be
+  #   image: woodpeckerci/plugin-docker-buildx
+  #   settings:
+  #     username:
+  #       from_secret: REGISTRY_USERNAME
+  #     password:
+  #       from_secret: REGISTRY_PASSWORD
+  #     registry: registry.ivanchenko.io
+  #     repo: registry.ivanchenko.io/${CI_REPO_NAME}
+  #     cache_from: registry.ivanchenko.io/${CI_REPO_NAME}:main
+  #     tags:
+  #       - ${CI_COMMIT_BRANCH/\//-}
+  #       - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
+  #     mtu: 1000
+  #   depends_on: [clone]
 
-  - name: build-fe
-    image: woodpeckerci/plugin-docker-buildx
-    settings:
-      dockerfile: frontend/Dockerfile
-      context: frontend/
-      username:
-        from_secret: REGISTRY_USERNAME
-      password:
-        from_secret: REGISTRY_PASSWORD
-      registry: registry.ivanchenko.io
-      repo: registry.ivanchenko.io/${CI_REPO_NAME}-frontapp
-      cache_from: registry.ivanchenko.io/${CI_REPO_NAME}-frontapp:main
-      tags:
-        - ${CI_COMMIT_BRANCH/\//-}
-        - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
-      mtu: 1000
-    depends_on: [clone]
+  # - name: build-fe
+  #   image: woodpeckerci/plugin-docker-buildx
+  #   settings:
+  #     dockerfile: frontend/Dockerfile
+  #     context: frontend/
+  #     username:
+  #       from_secret: REGISTRY_USERNAME
+  #     password:
+  #       from_secret: REGISTRY_PASSWORD
+  #     registry: registry.ivanchenko.io
+  #     repo: registry.ivanchenko.io/${CI_REPO_NAME}-frontapp
+  #     cache_from: registry.ivanchenko.io/${CI_REPO_NAME}-frontapp:main
+  #     tags:
+  #       - ${CI_COMMIT_BRANCH/\//-}
+  #       - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
+  #     mtu: 1000
+  #   depends_on: [clone]
 
   - name: helm
     image: alpine/helm:3.10.0
     secrets: [ REGISTRY_USERNAME, REGISTRY_PASSWORD ]
     commands:
-      - helm registry login registry.ivanchenko.io -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD}
-      - helm dependency build charts/plexio
-      - chart=$(helm package charts/plexio)
-      - helm push $(basename ${chart#*/}) oci://registry.ivanchenko.io
+      - echo ${REGISTRY_USERNAME}
+      # - helm registry login registry.ivanchenko.io -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD}
+      # - helm dependency build charts/plexio
+      # - chart=$(helm package charts/plexio)
+      # - helm push $(basename ${chart#*/}) oci://registry.ivanchenko.io
     depends_on: [clone]
