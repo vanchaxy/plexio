@@ -1,6 +1,6 @@
 steps:
   - name: Build BE
-    image: plugins/docker
+    image: woodpeckerci/plugin-docker-buildx
     settings:
       username:
         from_secret: REGISTRY_USERNAME
@@ -13,10 +13,9 @@ steps:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
       mtu: 1000
-    depends_on: [clone]
 
   - name: Build FE
-    image: plugins/docker
+    image: woodpeckerci/plugin-docker-buildx
     settings:
       dockerfile: frontend/Dockerfile
       context: frontend/
@@ -31,7 +30,6 @@ steps:
         - ${DRONE_BRANCH/\//-}
         - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
       mtu: 1000
-    depends_on: [Build BE]
 
   - name: helm
     image: alpine/helm:3.10.0
@@ -40,4 +38,3 @@ steps:
       - helm dependency build charts/plexio
       - chart=$$(helm package charts/plexio)
       - helm push $$(basename $${chart#*/}) oci://registry.ivanchenko.io
-    depends_on: [clone]
