@@ -7,11 +7,12 @@ steps:
       password:
         from_secret: REGISTRY_PASSWORD
       registry: registry.ivanchenko.io
-      repo: registry.ivanchenko.io/${DRONE_REPO_NAME}
-      cache_from: registry.ivanchenko.io/${DRONE_REPO_NAME}:main
+      repo: registry.ivanchenko.io/${CI_REPO_NAME}
+      platforms: linux/amd64
+      cache_from: registry.ivanchenko.io/${CI_REPO_NAME}:main
       tags:
-        - ${DRONE_BRANCH/\//-}
-        - ${DRONE_BRANCH/\//-}-${DRONE_COMMIT:0:8}
+        - ${CI_COMMIT_BRANCH/\//-}
+        - ${CI_COMMIT_BRANCH/\//-}-${CI_COMMIT_SHA:0:8}
       mtu: 1000
 
   # - name: Build FE
