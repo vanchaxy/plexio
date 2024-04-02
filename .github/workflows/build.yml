@@ -23,14 +23,11 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          flavor: |
-            # Disable latest tag
-            latest=false
-          images: ghcr.io/${{ github.repository_owner }}/plexio
+          images: ghcr.io/${{ github.repository }}
           tags: |
-            # Tag with git tag on release
-            type=ref,event=tag
-            type=raw,value=release
+            type=semver,pattern={{version}},value=${{ inputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
+            type=semver,pattern={{major}},value=${{ inputs.version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.3.0
