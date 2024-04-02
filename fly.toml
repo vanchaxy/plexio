@@ -2,7 +2,7 @@ app = 'plexio'
 primary_region = 'iad'
 
 [build]
-  image = "ghcr.io/vanchaxy/plexio:0.0.1-rc1"
+  image = "ghcr.io/vanchaxy/plexio:0.0.1-rc2"
 
 [http_service]
   internal_port = 80
