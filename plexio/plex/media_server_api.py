@@ -136,7 +136,6 @@ async def get_all_episodes(
 async def imdb_to_plex_id(
     *,
     client: ClientSession,
-    token: str,
     imdb_id: str,
     media_type: PlexMediaType,
 ) -> str:
@@ -144,7 +143,7 @@ async def imdb_to_plex_id(
         client=client,
         url='https://metadata.provider.plex.tv/library/metadata/matches',
         params={
-            'X-Plex-Token': token,
+            'X-Plex-Token': settings.plex_matching_token,
             'type': 1 if media_type is PlexMediaType.movie else 2,
             'title': f'imdb-{imdb_id}',
             'guid': f'com.plexapp.agents.imdb://{imdb_id}?lang=en',
@@ -193,7 +192,6 @@ async def stremio_to_plex_id(
 
     plex_id = await imdb_to_plex_id(
         client=client,
-        token=token,
         imdb_id=imdb_id,
         media_type=media_type,
     )
