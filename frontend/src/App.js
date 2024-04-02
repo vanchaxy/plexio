@@ -1,10 +1,8 @@
 import './App.css';
 import React, {useEffect, useState} from 'react';
 import {encode as base64_encode} from 'base-64';
-import {config} from './constants';
 import {v4 as uuidv4} from 'uuid';
 
-const URL = config.url;
 
 function App() {
     const [plexServersList, setPlexServersList] = useState([]);
@@ -37,20 +35,20 @@ function App() {
     const handleUserSet = user => {
         setUser(user);
 
-        fetch(`${URL}/api/v1/get-plex-servers`, {credentials: 'include'})
+        fetch(`/api/v1/get-plex-servers`, {credentials: 'include'})
             .then(response => response.json())
             .then(data => setPlexServersList(data))
             .catch(error => console.error('Error fetching servers:', error));
     };
 
     useEffect(() => {
-        fetch(`${URL}/api/v1/get-plex-user`, {credentials: "include"})
+        fetch(`/api/v1/get-plex-user`, {credentials: "include"})
             .then(response => {
                 switch (response.status) {
                     case 200:
                         return response.json()
                     case 403:
-                        window.location = `${URL}/api/v1/login?origin_url=${window.location}`
+                        window.location = `/api/v1/login?origin_url=${window.location}`
                         break
                     default:
                         console.error('Unexpected status:', response.status)
@@ -70,7 +68,7 @@ function App() {
             installationId: uuidv4(),
         }
         const encoded_configuration = base64_encode(JSON.stringify(configuration));
-        let addon_url = `${URL}/` + encoded_configuration + '/manifest.json';
+        let addon_url = `/` + encoded_configuration + '/manifest.json';
         navigator.clipboard.writeText(addon_url);
         window.location = addon_url.replace(/https?:\/\//, "stremio://");
     };
@@ -78,7 +76,7 @@ function App() {
     const handleDiscoveryTest = (event) => {
         event.preventDefault();
         setDiscoveryTestResult('Testing...')
-        fetch(`${URL}/api/v1/test-connection?` + new URLSearchParams({
+        fetch(`/api/v1/test-connection?` + new URLSearchParams({
             url: discoveryUrl,
             token: plexServer.accessToken,
         }))
@@ -114,7 +112,7 @@ function App() {
     }
 
     const logout = () => {
-        fetch(`${URL}/api/v1/logout`, {credentials: 'include'})
+        fetch(`/api/v1/logout`, {credentials: 'include'})
             .then(r => window.location.reload())
             .catch(error => console.error('Error fetching servers:', error));
     }

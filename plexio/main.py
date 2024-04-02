@@ -4,8 +4,8 @@ import aiohttp
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from redis.asyncio import Redis
 
+from plexio.cache import init_cache
 from plexio.routers.addon import router as addon_router
 from plexio.routers.auth import router as auth_router
 from plexio.routers.configuration import router as configuration_router
@@ -19,15 +19,15 @@ async def lifespan(app: FastAPI):
     plex_client = aiohttp.ClientSession(
         headers={'accept': 'application/json'},
     )
-    redis_client = Redis(host=settings.redis_host)
+    cache = init_cache(settings)
 
     yield {
         'plex_client': plex_client,
-        'redis_client': redis_client,
+        'cache': cache,
     }
 
     await plex_client.close()
-    await redis_client.close()
+    await cache.close()
 
 
 app = FastAPI(

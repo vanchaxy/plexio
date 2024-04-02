@@ -15,7 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff==0.1.7"
+    "ruff==0.3.4"
 ]
 
 [tool.hatch.version]
@@ -29,6 +29,10 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -37,10 +41,8 @@ select = [
     "C",   # flake8-comprehensions
     "B",   # flake8-bugbear
 ]
-line-length = 88
-target-version = "py311"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 split-on-trailing-comma = true
 force-wrap-aliases = true
 combine-as-imports = true

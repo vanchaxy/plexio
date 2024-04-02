@@ -2,7 +2,6 @@ import asyncio
 from http import HTTPStatus
 
 from aiohttp import ClientConnectorError, ClientSession
-from redis.asyncio.client import Redis
 from yarl import URL
 
 from plexio.models.plex import (
@@ -13,8 +12,6 @@ from plexio.models.plex import (
 )
 from plexio.plex.utils import get_json
 from plexio.settings import settings
-
-TYPE_TO_DUMMY_ID = {}
 
 
 async def check_server_connection(
@@ -136,40 +133,24 @@ async def get_all_episodes(
     return [PlexEpisodeMeta(**meta) for meta in metadata]
 
 
-async def get_dummy_media_id(*, client: ClientSession, media_type: PlexMediaType):
-    if dummy_id := TYPE_TO_DUMMY_ID.get(media_type):
-        return dummy_id
-    json = await get_json(
-        client=client,
-        url=settings.matching_plex_address / 'library/all',
-    )
-    metadata = json.get('MediaContainer', {}).get('Metadata', [])
-    for meta in metadata:
-        if meta['type'] == media_type:
-            TYPE_TO_DUMMY_ID[media_type] = meta['ratingKey']
-            return meta['ratingKey']
-
-
 async def imdb_to_plex_id(
     *,
     client: ClientSession,
+    token: str,
     imdb_id: str,
     media_type: PlexMediaType,
 ) -> str:
-    dummy_media_id = await get_dummy_media_id(
-        client=client,
-        media_type=media_type,
-    )
     json = await get_json(
         client=client,
-        url=settings.matching_plex_address
-        / f'library/metadata/{dummy_media_id}/matches',
+        url='https://metadata.provider.plex.tv/library/metadata/matches',
         params={
-            'manual': 1,
+            'X-Plex-Token': token,
+            'type': 1 if media_type is PlexMediaType.movie else 2,
             'title': f'imdb-{imdb_id}',
+            'guid': f'com.plexapp.agents.imdb://{imdb_id}?lang=en',
         },
     )
-    guid = json['MediaContainer']['SearchResult'][0]['guid']
+    guid = json['MediaContainer']['Metadata'][0]['guid']
     return guid
 
 
@@ -198,16 +179,13 @@ async def stremio_to_plex_id(
     client: ClientSession,
     url: URL,
     token: str,
-    redis: Redis,
+    cache,
     stremio_id: str,
     media_type: PlexMediaType,
 ) -> str | None:
-    try:
-        if cached_plex_id := await redis.get(stremio_id):
-            return cached_plex_id.decode()
-    except Exception:
-        pass # TODO logging error
- 
+    if cached_plex_id := await cache.get(stremio_id):
+        return cached_plex_id.decode()
+
     if media_type == PlexMediaType.show:
         imdb_id, season, episode = stremio_id.split(':')
     else:
@@ -215,6 +193,7 @@ async def stremio_to_plex_id(
 
     plex_id = await imdb_to_plex_id(
         client=client,
+        token=token,
         imdb_id=imdb_id,
         media_type=media_type,
     )
@@ -237,7 +216,9 @@ async def stremio_to_plex_id(
             )
             if plex_id:
                 break
+        else:
+            return None
 
     if plex_id:
-        await redis.set(imdb_id, plex_id)
+        await cache.set(stremio_id, plex_id)
     return plex_id
