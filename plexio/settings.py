@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     plex_requests_timeout: int = 5
     cache_type: CacheType = CacheType.memory
     redis_url: str = 'redis://redis/0'
+    plex_matching_token: str
 
 
 settings = Settings()
