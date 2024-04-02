@@ -1,8 +1,6 @@
 services:
   backend:
     build: .
-    environment:
-      - MATCHING_PLEX_ADDRESS=http://plex:32400
     env_file:
       .env
     ports:
@@ -20,15 +18,6 @@ services:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
     command: npm start
-  plex:
-    image: plexinc/pms-docker
-    ports:
-      - "33333:32400"
-    volumes:
-      - ./dummy.mp4:/dummy/3u53SlRs3c - 1x1 - 3u53SlRs3c - 1080p.mp4
-      - plexconfig:/config
-    environment:
-      - ALLOWED_NETWORKS="172.0.0.0/255.0.0.0"
   redis:
     image: "redis:alpine"
     ports:

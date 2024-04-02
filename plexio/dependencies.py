@@ -4,7 +4,6 @@ from typing import Annotated
 
 from aiohttp import ClientSession
 from fastapi import Cookie, Depends, HTTPException, Request, status
-from redis.asyncio.client import Redis
 from sentry_sdk import set_user
 
 from plexio.models.addon import AddonConfiguration
@@ -15,8 +14,8 @@ def get_http_client(request: Request) -> ClientSession:
     return request.state.plex_client
 
 
-def get_redis_client(request: Request) -> Redis:
-    return request.state.redis_client
+def get_cache(request: Request):
+    return request.state.cache
 
 
 async def get_plex_auth_token(

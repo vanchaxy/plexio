@@ -8,8 +8,8 @@ from redis.asyncio.client import Redis
 from plexio import __version__
 from plexio.dependencies import (
     get_addon_configuration,
+    get_cache,
     get_http_client,
-    get_redis_client,
 )
 from plexio.models import PLEX_TO_STREMIO_MEDIA_TYPE, STREMIO_TO_PLEX_MEDIA_TYPE
 from plexio.models.addon import AddonConfiguration
@@ -166,7 +166,7 @@ async def get_meta(
 )
 async def get_stream(
     http: Annotated[ClientSession, Depends(get_http_client)],
-    redis: Annotated[Redis, Depends(get_redis_client)],
+    cache: Annotated[Redis, Depends(get_cache)],
     configuration: Annotated[AddonConfiguration, Depends(get_addon_configuration)],
     stremio_type: StremioMediaType,
     media_id: str,
@@ -176,7 +176,7 @@ async def get_stream(
             client=http,
             url=configuration.discovery_url,
             token=configuration.access_token,
-            redis=redis,
+            cache=cache,
             stremio_id=media_id,
             media_type=STREMIO_TO_PLEX_MEDIA_TYPE[stremio_type],
         )
