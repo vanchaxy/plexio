@@ -68,7 +68,7 @@ function App() {
             installationId: uuidv4(),
         }
         const encoded_configuration = base64_encode(JSON.stringify(configuration));
-        let addon_url = `/` + encoded_configuration + '/manifest.json';
+        let addon_url = window.location.origin + `/` + encoded_configuration + '/manifest.json';
         navigator.clipboard.writeText(addon_url);
         window.location = addon_url.replace(/https?:\/\//, "stremio://");
     };

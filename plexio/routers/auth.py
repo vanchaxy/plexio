@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from aiohttp import ClientSession
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 from yarl import URL
 
@@ -15,14 +15,13 @@ router = APIRouter(prefix='/api/v1')
 
 @router.get('/login')
 async def login(
-    request: Request,
     http: Annotated[ClientSession, Depends(get_http_client)],
     origin_url: str = '/',
 ) -> RedirectResponse:
     auth_pin = await create_auth_pin(http)
 
-    forward_url = URL(
-        str(request.url_for('auth_redirect')),
+    forward_url = URL(origin_url).with_path(
+        router.url_path_for('auth_redirect'),
     ) % {
         'code': auth_pin.code,
         'id': auth_pin.id,

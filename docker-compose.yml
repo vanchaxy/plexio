@@ -1,6 +1,7 @@
 services:
   backend:
-    build: .
+    build:
+      dockerfile: local.Dockerfile
     env_file:
       .env
     ports:
@@ -8,6 +9,8 @@ services:
     volumes:
       - ./plexio:/app/plexio
     command: uvicorn plexio.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - redis
   frontend:
     build:
       context: frontend
@@ -22,6 +25,15 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-
-volumes:
-  plexconfig:
+  proxy:
+    image: nginx:alpine
+    volumes:
+      - type: bind
+        source: nginx-local.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+      - frontend

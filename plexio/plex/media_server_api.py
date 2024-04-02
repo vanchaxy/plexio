@@ -184,7 +184,7 @@ async def stremio_to_plex_id(
     media_type: PlexMediaType,
 ) -> str | None:
     if cached_plex_id := await cache.get(stremio_id):
-        return cached_plex_id.decode()
+        return cached_plex_id
 
     if media_type == PlexMediaType.show:
         imdb_id, season, episode = stremio_id.split(':')

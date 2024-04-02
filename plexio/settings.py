@@ -1,10 +1,12 @@
+from uuid import uuid4
+
 from pydantic_settings import BaseSettings
 
 from plexio.cache import CacheType
 
 
 class Settings(BaseSettings):
-    identifier: str = '9500ce72-c314-4453-959c-dfab96e222a4'
+    identifier: str = str(uuid4())
     product_name: str = 'Plexio'
     cors_origin_regex: str = (
         r'https?:\/\/localhost:\d+|.*plexio.stream|.*strem.io|.*stremio.com'
