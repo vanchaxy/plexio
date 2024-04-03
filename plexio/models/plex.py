@@ -150,7 +150,7 @@ class PlexMediaMeta(BaseModel):
 
             audio_languages = set()
             subtitles_languages = set()
-            for part_stream in media['Part'][0]['Stream']:
+            for part_stream in media['Part'][0].get('Stream', []):
                 if part_stream['streamType'] == 2:
                     audio_languages.add(
                         get_flag_emoji(part_stream.get('languageTag', 'Unknown'))

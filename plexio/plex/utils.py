@@ -1,3 +1,5 @@
+import asyncio
+
 from aiohttp import ClientConnectorError, ContentTypeError
 from fastapi import HTTPException
 from sentry_sdk import configure_scope
@@ -24,5 +26,10 @@ async def get_json(client, url, params=None):
             raise HTTPException(
                 status_code=500,
                 detail='Plex server connection error',
+            ) from e
+        except asyncio.TimeoutError as e:
+            raise HTTPException(
+                status_code=500,
+                detail='Plex server timeout error',
             ) from e
         return json
