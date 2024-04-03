@@ -2,17 +2,17 @@ app = 'plexio'
 primary_region = 'iad'
 
 [build]
-  image = "ghcr.io/vanchaxy/plexio:0.0.1-rc3"
+  image = 'ghcr.io/vanchaxy/plexio:0.0.1-rc4'
 
 [env]
-  CACHE_TYPE = "redis"
+  CACHE_TYPE = 'redis'
 
 [http_service]
   internal_port = 80
   force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 1
   processes = ['app']
 
 [[vm]]
