@@ -2,7 +2,7 @@ app = 'plexio'
 primary_region = 'iad'
 
 [build]
-  image = 'ghcr.io/vanchaxy/plexio:0.0.1-rc4'
+  image = 'ghcr.io/vanchaxy/plexio:0.0.1-rc5'
 
 [env]
   CACHE_TYPE = 'redis'
