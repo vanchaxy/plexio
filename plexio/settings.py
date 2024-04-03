@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     cors_origin_regex: str = (
         r'https?:\/\/localhost:\d+|.*plexio.stream|.*strem.io|.*stremio.com'
     )
-    plex_requests_timeout: int = 5
+    plex_requests_timeout: int = 10
     cache_type: CacheType = CacheType.memory
     redis_url: str = 'redis://redis/0'
     plex_matching_token: str
