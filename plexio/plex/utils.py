@@ -25,11 +25,11 @@ async def get_json(client, url, params=None):
             raise e
     except ClientConnectorError as e:
         raise HTTPException(
-            status_code=500,
+            status_code=502,
             detail='Plex server connection error',
         ) from e
     except asyncio.TimeoutError as e:
         raise HTTPException(
-            status_code=500,
+            status_code=504,
             detail='Plex server timeout error',
         ) from e

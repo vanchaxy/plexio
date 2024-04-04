@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.1-rc6",
+  "version": "0.0.1-rc7",
   "dependencies": {
     "base-64": "^1.0.0",
     "react": "^18.2.0",
