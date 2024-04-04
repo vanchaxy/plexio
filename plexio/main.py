@@ -20,7 +20,7 @@ def before_send(event, hint):
     return event
 
 
-sentry_sdk.init(before_send=before_send, dsn='https://8794c30b7339be6e295f12f7697d8382@o4507017381609472.ingest.us.sentry.io/4507017382068224')
+sentry_sdk.init(before_send=before_send)
 
 
 @asynccontextmanager
