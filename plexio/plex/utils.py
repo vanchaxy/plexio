@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from aiohttp import ClientConnectorError, ContentTypeError
 from fastapi import HTTPException
@@ -16,11 +17,15 @@ async def get_json(client, url, params=None):
             params=params,
             timeout=settings.plex_requests_timeout,
         ) as response:
-            json = await response.json()
-            return json
+            if response.status >= 400:
+                raise HTTPException(
+                    status_code=502,
+                    detail='Received error from plex server',
+                )
+            response_bytes = await response.read()
+            return json.loads(response_bytes.decode())
     except ContentTypeError as e:
         with configure_scope() as scope:
-            response_bytes = await response.read()
             scope.add_attachment(bytes=response_bytes, filename='attachment.txt')
             raise e
     except ClientConnectorError as e:
