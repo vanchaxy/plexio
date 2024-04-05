@@ -1,7 +1,9 @@
+import asyncio
 from abc import ABC, abstractmethod
 from enum import Enum
 
 from redis.asyncio import Redis
+from redis.exceptions import ConnectionError as RedisConnectionError
 
 
 def init_cache(settings):
@@ -46,16 +48,27 @@ class MemoryCache(AbstractCache):
 
 
 class RedisCache(AbstractCache):
+    RETRY_TIMES = 3
+    RETRY_BACKOFF_SEC = 1
+
     def __init__(self, redis_url):
         self._redis = Redis.from_url(url=redis_url)
 
     async def set(self, key, value):
-        await self._redis.set(key, value)
+        for _ in range(RedisCache.RETRY_TIMES):
+            try:
+                await self._redis.set(key, value)
+            except RedisConnectionError:
+                await asyncio.sleep(RedisCache.RETRY_BACKOFF_SEC)
 
     async def get(self, key):
-        if value := await self._redis.get(key):
-            return value.decode()
-        return None
+        for _ in range(RedisCache.RETRY_TIMES):
+            try:
+                if value := await self._redis.get(key):
+                    return value.decode()
+                return None
+            except RedisConnectionError:
+                await asyncio.sleep(RedisCache.RETRY_BACKOFF_SEC)
 
     async def close(self):
         await self._redis.close()

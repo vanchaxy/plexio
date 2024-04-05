@@ -1,6 +1,8 @@
 import asyncio
+import json
+from json import JSONDecodeError
 
-from aiohttp import ClientConnectorError, ContentTypeError
+from aiohttp import ClientConnectorError
 from fastapi import HTTPException
 from sentry_sdk import configure_scope
 
@@ -16,11 +18,15 @@ async def get_json(client, url, params=None):
             params=params,
             timeout=settings.plex_requests_timeout,
         ) as response:
-            json = await response.json()
-            return json
-    except ContentTypeError as e:
-        with configure_scope() as scope:
+            if response.status >= 400:
+                raise HTTPException(
+                    status_code=502,
+                    detail='Received error from plex server',
+                )
             response_bytes = await response.read()
+            return json.loads(response_bytes.decode())
+    except JSONDecodeError as e:
+        with configure_scope() as scope:
             scope.add_attachment(bytes=response_bytes, filename='attachment.txt')
             raise e
     except ClientConnectorError as e:
