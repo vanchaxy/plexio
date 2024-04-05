@@ -149,8 +149,9 @@ async def imdb_to_plex_id(
             'guid': f'com.plexapp.agents.imdb://{imdb_id}?lang=en',
         },
     )
-    guid = json['MediaContainer']['Metadata'][0]['guid']
-    return guid
+    media_container = json['MediaContainer']
+    if media_container['totalSize']:
+        return media_container['Metadata'][0]['guid']
 
 
 async def get_episode_guid(
@@ -195,6 +196,8 @@ async def stremio_to_plex_id(
         imdb_id=imdb_id,
         media_type=media_type,
     )
+    if not plex_id:
+        return None
 
     if media_type == PlexMediaType.show:
         media = await get_media(
