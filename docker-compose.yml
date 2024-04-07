@@ -13,14 +13,14 @@ services:
       - redis
   frontend:
     build:
-      context: frontend
+      context: frontend-vite
       dockerfile: local.Dockerfile
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-    command: npm start
+      - ./frontend-vite/src:/app/src
+      - ./frontend-vite/public:/app/public
+    command: npm run dev
   redis:
     image: "redis:alpine"
     ports:
