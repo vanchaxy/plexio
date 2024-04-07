@@ -9,6 +9,10 @@ from sentry_sdk import configure_scope
 from plexio.settings import settings
 
 
+class PlexUnauthorizedError(BaseException):
+    pass
+
+
 async def get_json(client, url, params=None):
     if params is None:
         params = {}
@@ -18,6 +22,9 @@ async def get_json(client, url, params=None):
             params=params,
             timeout=settings.plex_requests_timeout,
         ) as response:
+            # log unauthorized to sentry
+            if response.status in (401, 403):
+                raise PlexUnauthorizedError()
             if response.status >= 400:
                 raise HTTPException(
                     status_code=502,
