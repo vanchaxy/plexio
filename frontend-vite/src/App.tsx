@@ -1,14 +1,27 @@
-import { Button } from "@/components/ui/button"
-import { ThemeProvider } from "@/components/theme-provider"
-import {ModeToggle} from "@/components/mode-toggle.tsx";
+import ProtectedFormPage from "@/pages/ProtectedFormPage.tsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AuthRedirectPage from "@/pages/AuthRedirectPage.tsx";
+import usePlexToken from "@/hooks/usePlexToken.tsx";
 
 function App() {
+  const [token, setToken] = usePlexToken();
+
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <ModeToggle />
-      <Button variant="outline">Button</Button>
-    </ThemeProvider>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/auth-redirect"
+          element={<AuthRedirectPage setPlexToken={setToken} />}
+        ></Route>
+        <Route
+          path="/*"
+          element={
+            <ProtectedFormPage plexToken={token} setPlexToken={setToken} />
+          }
+        ></Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
