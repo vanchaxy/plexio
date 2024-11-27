@@ -3,5 +3,7 @@
 .python-version
 /*.py
 .env
+.idea
+.venv
 
 frontend/node_modules
