@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { encode as base64_encode } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
+import packageJson from '../../../package.json';
 import {
   DiscoveryUrlField,
   IncludeTranscodeOriginalField,
@@ -42,7 +43,7 @@ const ConfigurationForm: FC<Props> = ({ servers }) => {
   const sections = usePMSSections(discoveryUrl, server?.accessToken || null);
 
   function onSubmit(configuration: any, event: any) {
-    configuration.version = '0.0.1';
+    configuration.version = packageJson.version;
     configuration.accessToken = server?.accessToken;
     configuration.sections = configuration.sections.filter((item: any) =>
       sections.find((s) => s.key === item.key),
