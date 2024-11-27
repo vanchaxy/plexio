@@ -19,6 +19,6 @@ COPY plexio plexio
 
 RUN pip install -e . --no-cache-dir
 
-COPY --from=build /app/build frontend
+COPY --from=build /app/dist frontend
 
 COPY unit-nginx-config.json /docker-entrypoint.d/config.json
