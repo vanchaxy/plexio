@@ -1,9 +1,9 @@
-import Loading from "@/components/loading.tsx";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { FC, useEffect } from "react";
-import { getAuthToken } from "@/services/PlexService.tsx";
-import useClientIdentifier from "@/hooks/useClientIdentifier.tsx";
-import { SetPlexToken } from "@/hooks/usePlexToken.tsx";
+import { FC, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import Loading from '@/components/loading.tsx';
+import useClientIdentifier from '@/hooks/useClientIdentifier.tsx';
+import { SetPlexToken } from '@/hooks/usePlexToken.tsx';
+import { getAuthToken } from '@/services/PlexService.tsx';
 
 interface Props {
   setPlexToken: SetPlexToken;

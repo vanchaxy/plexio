@@ -1,7 +1,7 @@
-import ProtectedFormPage from "@/pages/ProtectedFormPage.tsx";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AuthRedirectPage from "@/pages/AuthRedirectPage.tsx";
-import usePlexToken from "@/hooks/usePlexToken.tsx";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import usePlexToken from '@/hooks/usePlexToken.tsx';
+import AuthRedirectPage from '@/pages/AuthRedirectPage.tsx';
+import ProtectedFormPage from '@/pages/ProtectedFormPage.tsx';
 
 function App() {
   const [token, setToken] = usePlexToken();

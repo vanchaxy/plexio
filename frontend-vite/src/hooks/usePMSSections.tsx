@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
-import { getPlexUser } from "@/services/PlexService.tsx";
-import useClientIdentifier from "@/hooks/useClientIdentifier.tsx";
-import { PlexToken } from "@/hooks/usePlexToken.tsx";
-import { getSections } from "@/services/PMSService.tsx";
+import { useEffect, useState } from 'react';
+import { PlexToken } from '@/hooks/usePlexToken.tsx';
+import { getSections } from '@/services/PMSService.tsx';
 
 const usePMSSections = (serverUrl: string, plexToken: PlexToken) => {
-  const [sections, setSections] = useState([]);
+  const [sections, setSections] = useState<any[]>([]);
 
   useEffect(() => {
+    setSections([]);
     if (!plexToken || !serverUrl) {
-      setSections([]);
       return;
     }
 

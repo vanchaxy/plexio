@@ -64,7 +64,7 @@ class StremioStream(StremioBase):
     ytId: str | None = None
     infoHash: str | None = None
     fileIdx: str | None = None
-    externalUrl: str | None = None
+    external_url: str | None = None
 
     name: str
     description: str

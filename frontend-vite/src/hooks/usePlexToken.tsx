@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export type PlexToken = string | null;
 
@@ -8,14 +8,14 @@ export interface SetPlexToken {
 
 const usePlexToken = (): [PlexToken, SetPlexToken] => {
   const [token, setToken] = useState<PlexToken>(() =>
-    localStorage.getItem("plexToken"),
+    localStorage.getItem('plexToken'),
   );
 
   useEffect(() => {
     if (token) {
-      localStorage.setItem("plexToken", token);
+      localStorage.setItem('plexToken', token);
     } else {
-      localStorage.removeItem("plexToken");
+      localStorage.removeItem('plexToken');
     }
   }, [token]);
 

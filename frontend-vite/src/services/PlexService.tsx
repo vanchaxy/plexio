@@ -1,21 +1,21 @@
-import axios from "axios";
+import axios from 'axios';
 
-const PLEX_PRODUCT_NAME = "Plexio";
-const PLEX_API_URL = "https://plex.tv/api/v2";
+const PLEX_PRODUCT_NAME = 'Plexio';
+const PLEX_API_URL = 'https://plex.tv/api/v2';
 
 export const createAuthPin = async (
   clientIdentifier: string,
 ): Promise<AuthPin> => {
   try {
     const response = await axios.postForm(`${PLEX_API_URL}/pins`, {
-      strong: "true",
-      "X-Plex-Product": PLEX_PRODUCT_NAME,
-      "X-Plex-Client-Identifier": clientIdentifier,
+      strong: 'true',
+      'X-Plex-Product': PLEX_PRODUCT_NAME,
+      'X-Plex-Client-Identifier': clientIdentifier,
     });
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error('Error fetching users:', error);
     throw error;
   }
 };
@@ -28,12 +28,12 @@ export const getAuthToken = async (
     const response = await axios.get(`${PLEX_API_URL}/pins/${authPin.id}`, {
       params: {
         code: authPin.code,
-        "X-Plex-Client-Identifier": clientIdentifier,
+        'X-Plex-Client-Identifier': clientIdentifier,
       },
     });
     return response.data.authToken;
   } catch (error) {
-    console.error("Error auth token:", error);
+    console.error('Error auth token:', error);
     throw error;
   }
 };
@@ -45,9 +45,9 @@ export const getPlexUser = async (
   try {
     const response = await axios.get(`${PLEX_API_URL}/user`, {
       params: {
-        "X-Plex-Product": PLEX_PRODUCT_NAME,
-        "X-Plex-Client-Identifier": clientIdentifier,
-        "X-Plex-Token": token,
+        'X-Plex-Product': PLEX_PRODUCT_NAME,
+        'X-Plex-Client-Identifier': clientIdentifier,
+        'X-Plex-Token': token,
       },
     });
 
@@ -57,7 +57,7 @@ export const getPlexUser = async (
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error('Error fetching user:', error);
     return null;
   }
 };
@@ -71,21 +71,21 @@ export const getPlexServers = async (
       params: {
         includeHttps: 1,
         includeRelay: 1,
-        "X-Plex-Token": token,
-        "X-Plex-Client-Identifier": clientIdentifier,
+        'X-Plex-Token': token,
+        'X-Plex-Client-Identifier': clientIdentifier,
       },
     });
 
     if (!response.data || !Array.isArray(response.data)) {
-      throw new Error("Invalid response from server");
+      throw new Error('Invalid response from server');
     }
 
     return response.data.filter(
       (server: any) =>
-        server.provides.includes("server") && "accessToken" in server,
+        server.provides.includes('server') && 'accessToken' in server,
     );
   } catch (error) {
-    console.error("Error fetching Plex servers:", error);
+    console.error('Error fetching Plex servers:', error);
     throw error;
   }
 };

@@ -7,26 +7,41 @@ from pydantic import BaseModel, ConfigDict, Field
 from plexio.models.utils import get_flag_emoji, to_camel
 
 
-class AuthPin(BaseModel):
-    id: int
-    code: str
+class Resolution(str, Enum):
+    R480 = '480p'
+    R720 = '720p'
+    R1080 = '1080p'
 
 
-class PlexUser(BaseModel):
-    username: str
-    thumb: str
-
-
-class PlexServer(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
-
-    name: str
-    source_title: str | None
-    public_address: str
-    access_token: str
-    relay: bool
-    https_required: bool
-    connections: list
+RESOLUTION_QUALITY_PARAMS = {
+    Resolution.R480: {
+        'name': '1080p',
+        'min_width': 1920,
+        'plex_args': {
+            'videoQuality': 100,
+            'maxVideoBitrate': 10,
+            'videoResolution': '1920x1080',
+        },
+    },
+    Resolution.R720: {
+        'name': '720p',
+        'min_width': 1280,
+        'plex_args': {
+            'videoQuality': 100,
+            'maxVideoBitrate': 6.5,
+            'videoResolution': '1280x720',
+        },
+    },
+    Resolution.R1080: {
+        'name': '480p',
+        'min_width': 640,
+        'plex_args': {
+            'videoQuality': 100,
+            'maxVideoBitrate': 3.5,
+            'videoResolution': '640×480',
+        },
+    },
+}
 
 
 class PlexMediaType(str, Enum):
@@ -153,25 +168,24 @@ class PlexMediaMeta(BaseModel):
             for part_stream in media['Part'][0].get('Stream', []):
                 if part_stream['streamType'] == 2:
                     audio_languages.add(
-                        get_flag_emoji(part_stream.get('languageTag', 'Unknown'))
+                        get_flag_emoji(part_stream.get('languageTag', 'Unknown')),
                     )
                 elif part_stream['streamType'] == 3:
                     subtitles_languages.add(
-                        get_flag_emoji(part_stream.get('languageTag', 'Unknown'))
+                        get_flag_emoji(part_stream.get('languageTag', 'Unknown')),
                     )
 
-            description_template = (
-                f'{filename}\n'
-                f'{{quality}}\n'
-                f'{"/".join(sorted(audio_languages))} '
-                f'({"/".join(sorted(subtitles_languages))})'
-            )
+            description_template = f'{filename}\n{{quality}}\n'
+            description_template += "/".join(sorted(audio_languages))
+            if subtitles_languages:
+                description_template += f' ({"/".join(sorted(subtitles_languages))})'
+
             quality_description = f'Direct Play {media["videoResolution"]}'
             streams.append(
                 StremioStream(
                     name=name,
                     description=description_template.format(
-                        quality=quality_description
+                        quality=quality_description,
                     ),
                     url=str(
                         configuration.streaming_url
@@ -181,7 +195,7 @@ class PlexMediaMeta(BaseModel):
                         },
                     ),
                     behaviorHints={'bingeGroup': quality_description},
-                )
+                ),
             )
 
             transcode_url = (
@@ -198,32 +212,43 @@ class PlexMediaMeta(BaseModel):
                     'X-Plex-Token': configuration.access_token,
                 }
             )
-
-            quality_description = f'Transcode {media["videoResolution"]} (original)'
-            streams.append(
-                StremioStream(
-                    name=name,
-                    description=description_template.format(
-                        quality=quality_description
-                    ),
-                    url=str(transcode_url % {'videoQuality': 100}),
-                    behaviorHints={'bingeGroup': quality_description},
-                )
-            )
-
-            for quality in configuration.qualities:
-                if media['width'] <= quality['min_width']:
-                    continue
-                quality_description = f'Transcode {quality["name"]}'
+            if configuration.include_transcode_original:
+                quality_description = f'Transcode {media["videoResolution"]} (original)'
                 streams.append(
                     StremioStream(
                         name=name,
                         description=description_template.format(
-                            quality=quality_description
+                            quality=quality_description,
                         ),
-                        url=str(transcode_url % quality['plex_args']),
+                        url=str(transcode_url % {'videoQuality': 100}),
                         behaviorHints={'bingeGroup': quality_description},
+                    ),
+                )
+
+            if configuration.include_transcode_down:
+                for quality in configuration.transcode_down_qualities:
+                    quality_params = RESOLUTION_QUALITY_PARAMS[quality]
+                    if media['width'] <= quality_params['min_width']:
+                        continue
+                    quality_description = f'Transcode {quality_params["name"]}'
+                    streams.append(
+                        StremioStream(
+                            name=name,
+                            description=description_template.format(
+                                quality=quality_description,
+                            ),
+                            url=str(transcode_url % quality_params['plex_args']),
+                            behaviorHints={'bingeGroup': quality_description},
+                        ),
                     )
+
+            if configuration.include_plex_tv and self.guid.startswith('plex:'):
+                streams.append(
+                    StremioStream(
+                        name=name,
+                        description='Open on plex.tv (external)',
+                        externalUrl=f'https://app.plex.tv/#!/provider/tv.plex.provider.metadata/details?key=/library/metadata/{self.guid.split("/")[-1]}',
+                    ),
                 )
 
         return streams
@@ -269,7 +294,7 @@ class PlexEpisodeMeta(BaseModel):
             released = f'{self.originally_available_at}T00:00:00.000Z'
         else:
             released = datetime.fromtimestamp(self.added_at).strftime(
-                '%Y-%m-%dT%H:%M:%S.%fZ'
+                '%Y-%m-%dT%H:%M:%S.%fZ',
             )
 
         return StremioVideoMeta(

@@ -1,29 +1,25 @@
-import usePlexUser from "@/hooks/usePlexUser.tsx";
-import Login from "@/components/login.tsx";
-import Loading from "@/components/loading.tsx";
-import ConfigurationForm from "@/components/configurationForm.tsx";
-import { FC } from "react";
+import { FC } from 'react';
+import FAQ from '@/components/faq.tsx';
+import Header from '@/components/header.tsx';
+import ProtectedForm from '@/components/protectedForm.tsx';
+import { Toaster } from '@/components/ui/toaster.tsx';
+import usePlexUser from '@/hooks/usePlexUser.tsx';
 
 interface Props {
-  plexToken: string;
+  plexToken: string | null;
   setPlexToken: (token: string | null) => void;
 }
 
 const ProtectedFormPage: FC<Props> = ({ plexToken, setPlexToken }) => {
   const plexUser = usePlexUser(plexToken);
 
-  if (plexUser === undefined) {
-    return <Loading />;
-  }
-  if (plexUser === null) {
-    return <Login />;
-  }
   return (
-    <ConfigurationForm
-      plexToken={plexToken}
-      setPlexToken={setPlexToken}
-      plexUser={plexUser}
-    />
+    <div className="mx-auto max-w-2xl">
+      <Toaster />
+      <Header plexUser={plexUser} setPlexToken={setPlexToken}></Header>
+      <ProtectedForm plexToken={plexToken} plexUser={plexUser} />
+      <FAQ />
+    </div>
   );
 };
 

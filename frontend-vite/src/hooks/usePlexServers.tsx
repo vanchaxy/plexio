@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { getPlexServers } from "@/services/PlexService.tsx";
-import useClientIdentifier from "@/hooks/useClientIdentifier.tsx";
-import { PlexToken } from "@/hooks/usePlexToken.tsx";
+import { useEffect, useState } from 'react';
+import useClientIdentifier from '@/hooks/useClientIdentifier.tsx';
+import { PlexToken } from '@/hooks/usePlexToken.tsx';
+import { getPlexServers } from '@/services/PlexService.tsx';
 
-const usePlexServers = (plexToken: PlexToken) => {
+const usePlexServers = (plexToken: PlexToken | null) => {
   const [servers, setServers] = useState<PlexServer[]>([]);
   const clientIdentifier = useClientIdentifier();
 

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button.tsx";
-import useClientIdentifier from "@/hooks/useClientIdentifier.tsx";
-import { createAuthPin } from "@/services/PlexService.tsx";
+import { Button } from '@/components/ui/button.tsx';
+import useClientIdentifier from '@/hooks/useClientIdentifier.tsx';
+import { createAuthPin } from '@/services/PlexService.tsx';
 
 const Login = () => {
   const clientIdentifier = useClientIdentifier();
@@ -20,7 +20,22 @@ const Login = () => {
     window.location.href = `https://app.plex.tv/auth#?${loginParams}`;
   };
 
-  return <Button onClick={handleLogin}> Login </Button>;
+  return (
+    <div className="border rounded-lg p-6">
+      <h1 className="text-xl font-bold text-center ">
+        Plexio: Plex Interaction for Stremio
+      </h1>
+      <p className="text-sm text-center mt-2">
+        Seamlessly connects your Plex and Stremio accounts, letting you enjoy
+        your Plex media directly within Stremio.
+      </p>
+      <div className="mt-6">
+        <Button onClick={handleLogin} className="w-full">
+          Login
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

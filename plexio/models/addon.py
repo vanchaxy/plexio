@@ -1,41 +1,8 @@
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    field_validator,
-)
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from yarl import URL
 
+from plexio.models.plex import PlexLibrarySection, Resolution
 from plexio.models.utils import to_camel
-
-DEFAULT_QUALITIES = [
-    {
-        'name': '4k',
-        'min_width': 3840,
-        'plex_args': {
-            'videoQuality': 100,
-            'maxVideoBitrate': 64,
-            'videoResolution': '3840x2160',
-        },
-    },
-    {
-        'name': '1080p',
-        'min_width': 1920,
-        'plex_args': {
-            'videoQuality': 100,
-            'maxVideoBitrate': 10,
-            'videoResolution': '1920x1080',
-        },
-    },
-    {
-        'name': '720p',
-        'min_width': 1280,
-        'plex_args': {
-            'videoQuality': 100,
-            'maxVideoBitrate': 6.5,
-            'videoResolution': '1280x720',
-        },
-    },
-]
 
 
 class AddonConfiguration(BaseModel):
@@ -48,9 +15,12 @@ class AddonConfiguration(BaseModel):
     discovery_url: URL
     streaming_url: URL
     server_name: str
-    installation_id: str
     version: str = '0.0.1'
-    qualities: list = DEFAULT_QUALITIES
+    sections: list[PlexLibrarySection]
+    include_transcode_original: bool = False
+    include_transcode_down: bool = False
+    transcode_down_qualities: list[Resolution] = Field(default_factory=list)
+    include_plex_tv: bool = False
 
     _extract_discovery_url = field_validator('discovery_url', mode='before')(URL)
     _extract_streaming_url = field_validator('streaming_url', mode='before')(URL)

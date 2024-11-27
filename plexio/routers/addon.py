@@ -10,6 +10,7 @@ from plexio.dependencies import (
     get_addon_configuration,
     get_cache,
     get_http_client,
+    set_sentry_user,
 )
 from plexio.models import PLEX_TO_STREMIO_MEDIA_TYPE, STREMIO_TO_PLEX_MEDIA_TYPE
 from plexio.models.addon import AddonConfiguration
@@ -25,34 +26,30 @@ from plexio.plex.media_server_api import (
     get_all_episodes,
     get_media,
     get_section_media,
-    get_sections,
     stremio_to_plex_id,
 )
 
 router = APIRouter()
+router.dependencies.append(Depends(set_sentry_user))
 
 
 @router.get('/manifest.json', response_model_exclude_none=True)
-@router.get('/{base64_cfg}/manifest.json', response_model_exclude_none=True)
+@router.get(
+    '/{installation_id}/{base64_cfg}/manifest.json', response_model_exclude_none=True
+)
 async def get_manifest(
-    http: Annotated[ClientSession, Depends(get_http_client)],
     configuration: Annotated[
         AddonConfiguration | None,
         Depends(get_addon_configuration),
     ],
+    installation_id: str | None = None,
 ) -> StremioManifest:
     catalogs = []
     description = 'Play movies and series from plex.tv.'
     name = 'Plexio'
 
     if configuration is not None:
-        sections = await get_sections(
-            client=http,
-            url=configuration.discovery_url,
-            token=configuration.access_token,
-        )
-
-        for section in sections:
+        for section in configuration.sections:
             catalogs.append(
                 StremioCatalogManifest(
                     id=section.key,
@@ -66,7 +63,7 @@ async def get_manifest(
             )
 
         name += f' ({configuration.server_name})'
-        description += f' Your installation ID: {configuration.installation_id}'
+        description += f' Your installation ID: {installation_id}'
 
     return StremioManifest(
         id='com.stremio.plexio',
@@ -94,15 +91,15 @@ async def get_manifest(
 
 
 @router.get(
-    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}.json',
+    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}.json',
     response_model_exclude_none=True,
 )
 @router.get(
-    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/skip={skip}.json',
+    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/skip={skip}.json',
     response_model_exclude_none=True,
 )
 @router.get(
-    '/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/search={search}.json',
+    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/search={search}.json',
     response_model_exclude_none=True,
 )
 async def get_catalog(
@@ -122,12 +119,12 @@ async def get_catalog(
         skip=skip,
     )
     return StremioCatalog(
-        metas=[m.to_stremio_meta_review(configuration) for m in media]
+        metas=[m.to_stremio_meta_review(configuration) for m in media],
     )
 
 
 @router.get(
-    '/{base64_cfg}/meta/{stremio_type}/{plex_id:path}.json',
+    '/{installation_id}/{base64_cfg}/meta/{stremio_type}/{plex_id:path}.json',
     response_model_exclude_none=True,
 )
 async def get_meta(
@@ -161,7 +158,7 @@ async def get_meta(
 
 
 @router.get(
-    '/{base64_cfg}/stream/{stremio_type}/{media_id:path}.json',
+    '/{installation_id}/{base64_cfg}/stream/{stremio_type}/{media_id:path}.json',
     response_model_exclude_none=True,
 )
 async def get_stream(
