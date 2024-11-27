@@ -9,17 +9,7 @@ const QUESTIONS = [
   {
     id: 'what-is-plexio',
     question: `What is Plexio?`,
-    answer: `Plexio allows you to integrate your Plex library with Streamio, enabling seamless access to your media.`,
-  },
-  {
-    id: 'is-free',
-    question: `Is Plexio free?`,
-    answer: `Yes, Plexio is free to use with your existing Plex and Streamio accounts.`,
-  },
-  {
-    id: 'how-to-connect',
-    question: `How do I connect Plex to Streamio?`,
-    answer: `Simply log in using your Plex account, and Plexio will handle the integration with Streamio.`,
+    answer: `Plexio is a Stremio addon that allows you to integrate your Plex library into Stremio.`,
   },
 ];
 
