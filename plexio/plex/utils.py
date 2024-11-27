@@ -1,4 +1,3 @@
-import asyncio
 import json
 from json import JSONDecodeError
 
@@ -24,7 +23,7 @@ async def get_json(client, url, params=None):
         ) as response:
             # log unauthorized to sentry
             if response.status in (401, 403):
-                raise PlexUnauthorizedError()
+                raise PlexUnauthorizedError
             if response.status >= 400:
                 raise HTTPException(
                     status_code=502,
@@ -41,7 +40,7 @@ async def get_json(client, url, params=None):
             status_code=502,
             detail='Plex server connection error',
         ) from e
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise HTTPException(
             status_code=504,
             detail='Plex server timeout error',

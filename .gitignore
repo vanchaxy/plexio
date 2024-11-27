@@ -1,7 +1,10 @@
+__pycache__
 .ruff_cache
 *.egg-info
 .python-version
 /*.py
 .env
+.idea
+.venv
 
 frontend/node_modules

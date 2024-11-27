@@ -1,4 +1,3 @@
-import asyncio
 from http import HTTPStatus
 
 from aiohttp import ClientConnectorError, ClientSession
@@ -6,7 +5,6 @@ from yarl import URL
 
 from plexio.models.plex import (
     PlexEpisodeMeta,
-    PlexLibrarySection,
     PlexMediaMeta,
     PlexMediaType,
 )
@@ -31,28 +29,8 @@ async def check_server_connection(
             if response.status != HTTPStatus.OK:
                 return False
             return True
-    except (asyncio.TimeoutError, ClientConnectorError):
+    except (TimeoutError, ClientConnectorError):
         return False
-
-
-async def get_sections(
-    *,
-    client: ClientSession,
-    url: URL,
-    token: str,
-) -> list[PlexLibrarySection]:
-    json = await get_json(
-        client=client,
-        url=url / 'library/sections',
-        params={
-            'X-Plex-Token': token,
-        },
-    )
-    return [
-        PlexLibrarySection(**section)
-        for section in json['MediaContainer']['Directory']
-        if section['type'] in {PlexMediaType.movie, PlexMediaType.show}
-    ]
 
 
 async def get_section_media(

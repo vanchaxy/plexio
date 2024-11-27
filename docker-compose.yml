@@ -16,15 +16,15 @@ services:
       context: frontend
       dockerfile: local.Dockerfile
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
-    command: npm start
+    command: npm run dev
   redis:
     image: "redis:alpine"
     ports:
-      - "6379:6379"
+      - "6399:6379"
   proxy:
     image: nginx:alpine
     volumes:

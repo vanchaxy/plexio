@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from plexio.cache import init_cache
 from plexio.routers.addon import router as addon_router
-from plexio.routers.auth import router as auth_router
 from plexio.routers.configuration import router as configuration_router
 from plexio.settings import settings
 
@@ -52,5 +51,4 @@ app.add_middleware(
 )
 
 app.include_router(addon_router)
-app.include_router(auth_router)
 app.include_router(configuration_router)
