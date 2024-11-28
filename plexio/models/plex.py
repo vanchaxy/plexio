@@ -62,7 +62,7 @@ class PlexMediaMeta(BaseModel):
     guid: str
     type: PlexMediaType
     title: str
-    added_at: int
+    added_at: int = 0
 
     rating_key: str | None = None
     key: str | None = None
@@ -180,7 +180,7 @@ class PlexMediaMeta(BaseModel):
             if subtitles_languages:
                 description_template += f' ({"/".join(sorted(subtitles_languages))})'
 
-            quality_description = f'Direct Play {media["videoResolution"]}'
+            quality_description = f'Direct Play {media.get("videoResolution", "")}'
             streams.append(
                 StremioStream(
                     name=name,
@@ -213,7 +213,7 @@ class PlexMediaMeta(BaseModel):
                 }
             )
             if configuration.include_transcode_original:
-                quality_description = f'Transcode {media["videoResolution"]} (original)'
+                quality_description = f'Transcode {media.get("videoResolution", "")} (original)'
                 streams.append(
                     StremioStream(
                         name=name,
@@ -261,7 +261,7 @@ class PlexEpisodeMeta(BaseModel):
     title: str
     index: int
     parent_index: int
-    added_at: int
+    added_at: int = 0
 
     type: str | None = None
     rating_key: str | None = None
