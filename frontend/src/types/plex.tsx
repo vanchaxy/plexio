@@ -14,6 +14,7 @@ interface PlexServer {
   publicAddress: string;
   accessToken: string;
   relay: boolean;
+  owned: boolean;
   httpsRequired: boolean;
   connections: any[];
 }

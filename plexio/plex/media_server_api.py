@@ -116,12 +116,13 @@ async def imdb_to_plex_id(
     client: ClientSession,
     imdb_id: str,
     media_type: PlexMediaType,
+    token: str,
 ) -> str:
     json = await get_json(
         client=client,
         url='https://metadata.provider.plex.tv/library/metadata/matches',
         params={
-            'X-Plex-Token': settings.plex_matching_token,
+            'X-Plex-Token': settings.plex_matching_token or token,
             'type': 1 if media_type is PlexMediaType.movie else 2,
             'title': f'imdb-{imdb_id}',
             'guid': f'com.plexapp.agents.imdb://{imdb_id}?lang=en',
@@ -173,6 +174,7 @@ async def stremio_to_plex_id(
         client=client,
         imdb_id=imdb_id,
         media_type=media_type,
+        token=token,
     )
     if not plex_id:
         return None
