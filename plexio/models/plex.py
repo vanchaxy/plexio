@@ -175,17 +175,19 @@ class PlexMediaMeta(BaseModel):
                         get_flag_emoji(part_stream.get('languageTag', 'Unknown')),
                     )
 
-            description_template = f'{filename}\n{{quality}}\n'
-            description_template += "/".join(sorted(audio_languages))
+            description_template = '{filename}\n{quality}\n{languages}'
+            languages = "/".join(sorted(audio_languages))
             if subtitles_languages:
-                description_template += f' ({"/".join(sorted(subtitles_languages))})'
+                languages += f' ({"/".join(sorted(subtitles_languages))})'
 
             quality_description = f'Direct Play {media.get("videoResolution", "")}'
             streams.append(
                 StremioStream(
                     name=name,
                     description=description_template.format(
+                        filename=filename,
                         quality=quality_description,
+                        languages=languages,
                     ),
                     url=str(
                         configuration.streaming_url
@@ -218,7 +220,9 @@ class PlexMediaMeta(BaseModel):
                     StremioStream(
                         name=name,
                         description=description_template.format(
+                            filename=filename,
                             quality=quality_description,
+                            languages=languages,
                         ),
                         url=str(transcode_url % {'videoQuality': 100}),
                         behaviorHints={'bingeGroup': quality_description},
@@ -235,7 +239,9 @@ class PlexMediaMeta(BaseModel):
                         StremioStream(
                             name=name,
                             description=description_template.format(
+                                filename=filename,
                                 quality=quality_description,
+                                languages=languages,
                             ),
                             url=str(transcode_url % quality_params['plex_args']),
                             behaviorHints={'bingeGroup': quality_description},
