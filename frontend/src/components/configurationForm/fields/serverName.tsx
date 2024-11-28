@@ -48,9 +48,9 @@ export const ServerNameField: FC<Props> = ({ form, servers }) => {
             <SelectContent>
               {servers.map((s, index) => (
                 <SelectItem key={index} value={s.name}>
-                  {s.owned && (
+                  {!s.owned && (
                     <Badge className="mr-1.5" variant="secondary">
-                      owner
+                      shared
                     </Badge>
                   )}
                   {s.name}
