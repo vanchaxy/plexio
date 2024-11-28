@@ -78,6 +78,8 @@ async def get_media(
     media_sections = json['MediaContainer'].get('Metadata', [])
     media_metas = []
     for section in media_sections:
+        if section['type'] not in ('show', 'movie', 'episode'):
+            continue
         json = await get_json(
             client=client,
             url=url / 'library/metadata' / section['ratingKey'],
