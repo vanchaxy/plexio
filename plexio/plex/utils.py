@@ -30,7 +30,7 @@ async def get_json(client, url, params=None):
                     detail='Received error from plex server',
                 )
             response_bytes = await response.read()
-            return json.loads(response_bytes.decode())
+            return json.loads(response_bytes.decode(errors='ignore'))
     except JSONDecodeError as e:
         with configure_scope() as scope:
             scope.add_attachment(bytes=response_bytes, filename='attachment.txt')
