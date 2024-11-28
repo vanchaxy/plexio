@@ -26,6 +26,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern={{version}},value=${{ inputs.version }}
+            latest=${{ github.event.release.prerelease == 'false' && 'latest' || '' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.3.0
