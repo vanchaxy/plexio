@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { ConfigurationFormType } from '@/components/configurationForm/formSchema.tsx';
+import { Badge } from '@/components/ui/badge.tsx';
 import {
   FormControl,
   FormDescription,
@@ -47,6 +48,11 @@ export const ServerNameField: FC<Props> = ({ form, servers }) => {
             <SelectContent>
               {servers.map((s, index) => (
                 <SelectItem key={index} value={s.name}>
+                  {s.owned && (
+                    <Badge className="mr-1.5" variant="secondary">
+                      owner
+                    </Badge>
+                  )}
                   {s.name}
                 </SelectItem>
               ))}
