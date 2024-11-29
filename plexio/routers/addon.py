@@ -22,6 +22,7 @@ from plexio.models.stremio import (
     StremioMetaResponse,
     StremioStreamsResponse,
 )
+from plexio.models.utils import plexio_id_to_guid
 from plexio.plex.media_server_api import (
     get_all_episodes,
     get_media,
@@ -76,12 +77,12 @@ async def get_manifest(
             {
                 'name': 'meta',
                 'types': ['movie', 'series'],
-                'idPrefixes': ['plex://', 'local://'],
+                'idPrefixes': ['plexio'],
             },
         ],
         types=[StremioMediaType.movie, StremioMediaType.series],
         catalogs=catalogs,
-        idPrefixes=['tt', 'plex://', 'local://'],
+        idPrefixes=['tt', 'plexio'],
         behaviorHints={
             'configurable': True,
             'configurationRequired': configuration is None,
@@ -133,11 +134,12 @@ async def get_meta(
     stremio_type: StremioMediaType,
     plex_id: str,
 ) -> StremioMetaResponse:
+    guid = plexio_id_to_guid(plex_id)
     media = await get_media(
         client=http,
         url=configuration.discovery_url,
         token=configuration.access_token,
-        guid=plex_id,
+        guid=guid,
         get_only_first=True,
     )
     if not media:
@@ -180,7 +182,7 @@ async def get_stream(
         if not plex_id:
             return StremioStreamsResponse()
     else:
-        plex_id = media_id
+        plex_id = plexio_id_to_guid(media_id)
 
     media = await get_media(
         client=http,

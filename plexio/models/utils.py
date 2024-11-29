@@ -123,3 +123,13 @@ def get_flag_emoji(code):
 def to_camel(string: str) -> str:
     words = string.split('_')
     return words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+
+
+def guid_to_plexio_id(guid: str) -> str:
+    schema, key = guid.split('://')
+    return f'plexio:{schema}:{key}'
+
+
+def plexio_id_to_guid(plexio_id: str) -> str:
+    _, schema, key = plexio_id.split(':')
+    return f'{schema}://{key}'

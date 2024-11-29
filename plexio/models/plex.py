@@ -4,7 +4,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from plexio.models.utils import get_flag_emoji, to_camel
+from plexio.models.utils import get_flag_emoji, guid_to_plexio_id, to_camel
 
 
 class Resolution(str, Enum):
@@ -139,7 +139,7 @@ class PlexMediaMeta(BaseModel):
                 imdb_id = guid['id'][7:]
 
         return StremioMetaPreview(
-            id=imdb_id or self.guid,
+            id=imdb_id or guid_to_plexio_id(self.guid),
             name=self.title,
             releaseInfo=str(self.year),
             poster=str(
@@ -176,7 +176,7 @@ class PlexMediaMeta(BaseModel):
                     )
 
             description_template = '{filename}\n{quality}\n{languages}'
-            languages = "/".join(sorted(audio_languages))
+            languages = '/'.join(sorted(audio_languages))
             if subtitles_languages:
                 languages += f' ({"/".join(sorted(subtitles_languages))})'
 
@@ -215,7 +215,9 @@ class PlexMediaMeta(BaseModel):
                 }
             )
             if configuration.include_transcode_original:
-                quality_description = f'Transcode {media.get("videoResolution", "")} (original)'
+                quality_description = (
+                    f'Transcode {media.get("videoResolution", "")} (original)'
+                )
                 streams.append(
                     StremioStream(
                         name=name,
