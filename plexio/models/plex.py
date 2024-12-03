@@ -171,6 +171,7 @@ class PlexMediaMeta(BaseModel):
 
             audio_languages = set()
             subtitles_languages = set()
+            external_subtitles = []
             for part_stream in media['Part'][0].get('Stream', []):
                 if part_stream['streamType'] == 2:
                     audio_languages.add(
@@ -180,6 +181,20 @@ class PlexMediaMeta(BaseModel):
                     subtitles_languages.add(
                         get_flag_emoji(part_stream.get('languageTag', 'Unknown')),
                     )
+                    if 'key' in part_stream:
+                        external_subtitles.append(
+                            {
+                                'id': str(part_stream['id']),
+                                'lang': part_stream['displayTitle'],
+                                'url': str(
+                                    configuration.streaming_url
+                                    / part_stream['key'][1:]
+                                    % {
+                                        'X-Plex-Token': configuration.access_token,
+                                    }
+                                ),
+                            }
+                        )
 
             description_template = '{filename}\n{quality}\n{languages}'
             languages = '/'.join(sorted(audio_languages))
@@ -202,6 +217,7 @@ class PlexMediaMeta(BaseModel):
                             'X-Plex-Token': configuration.access_token,
                         },
                     ),
+                    subtitles=external_subtitles,
                     behaviorHints={'bingeGroup': quality_description},
                 ),
             )
@@ -233,6 +249,7 @@ class PlexMediaMeta(BaseModel):
                             languages=languages,
                         ),
                         url=str(transcode_url % {'videoQuality': 100}),
+                        subtitles=external_subtitles,
                         behaviorHints={'bingeGroup': quality_description},
                     ),
                 )
@@ -252,6 +269,7 @@ class PlexMediaMeta(BaseModel):
                                 languages=languages,
                             ),
                             url=str(transcode_url % quality_params['plex_args']),
+                            subtitles=external_subtitles,
                             behaviorHints={'bingeGroup': quality_description},
                         ),
                     )
