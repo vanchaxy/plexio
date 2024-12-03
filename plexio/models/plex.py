@@ -132,14 +132,20 @@ class PlexMediaMeta(BaseModel):
         from plexio.models import PLEX_TO_STREMIO_MEDIA_TYPE
         from plexio.models.stremio import StremioMetaPreview
 
-        imdb_id = None
+        stremio_id = None
         guids = self.guids
         for guid in guids:
             if guid['id'].startswith('imdb://'):
-                imdb_id = guid['id'][7:]
+                stremio_id = guid['id'][7:]
+
+        if not stremio_id:
+            if '://' in self.guid:
+                stremio_id = guid_to_plexio_id(self.guid)
+            else:
+                stremio_id = self.guid
 
         return StremioMetaPreview(
-            id=imdb_id or guid_to_plexio_id(self.guid),
+            id=stremio_id,
             name=self.title,
             releaseInfo=str(self.year),
             poster=str(
@@ -268,7 +274,7 @@ class PlexEpisodeMeta(BaseModel):
     guid: str
     title: str
     index: int
-    parent_index: int
+    parent_index: int = 0
     added_at: int = 0
 
     type: str | None = None

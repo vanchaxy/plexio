@@ -1,7 +1,7 @@
 import json
 from json import JSONDecodeError
 
-from aiohttp import ClientConnectorError
+from aiohttp import ClientConnectorError, ServerDisconnectedError
 from fastapi import HTTPException
 from sentry_sdk import configure_scope
 
@@ -39,6 +39,11 @@ async def get_json(client, url, params=None):
         raise HTTPException(
             status_code=502,
             detail='Plex server connection error',
+        ) from e
+    except ServerDisconnectedError as e:
+        raise HTTPException(
+            status_code=502,
+            detail='Plex server disconnected error',
         ) from e
     except TimeoutError as e:
         raise HTTPException(

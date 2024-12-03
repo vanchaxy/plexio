@@ -110,7 +110,11 @@ async def get_all_episodes(
         },
     )
     metadata = json['MediaContainer'].get('Metadata', [])
-    return [PlexEpisodeMeta(**meta) for meta in metadata]
+    episodes = []
+    for i, meta in enumerate(metadata):
+        meta.setdefault('index', i)
+        episodes.append(PlexEpisodeMeta(**meta))
+    return episodes
 
 
 async def imdb_to_plex_id(
@@ -168,7 +172,10 @@ async def stremio_to_plex_id(
         return cached_plex_id
 
     if media_type == PlexMediaType.show:
-        imdb_id, season, episode = stremio_id.split(':')
+        id_season_episode = stremio_id.split(':')
+        if len(id_season_episode) != 3:
+            return None
+        imdb_id, season, episode = id_season_episode
     else:
         imdb_id = stremio_id
 

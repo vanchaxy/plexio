@@ -134,6 +134,9 @@ async def get_meta(
     stremio_type: StremioMediaType,
     plex_id: str,
 ) -> StremioMetaResponse:
+    if not plex_id.startswith('plexio:'):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
     guid = plexio_id_to_guid(plex_id)
     media = await get_media(
         client=http,
@@ -181,8 +184,10 @@ async def get_stream(
         )
         if not plex_id:
             return StremioStreamsResponse()
-    else:
+    elif media_id.startswith('plexio:'):
         plex_id = plexio_id_to_guid(media_id)
+    else:
+        plex_id = media_id
 
     media = await get_media(
         client=http,
