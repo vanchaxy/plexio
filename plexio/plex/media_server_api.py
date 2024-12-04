@@ -11,6 +11,38 @@ from plexio.models.plex import (
 from plexio.plex.utils import get_json
 from plexio.settings import settings
 
+SORT_OPTIONS = {
+    'Title': 'title',
+    'Title (desc)': 'title:desc',
+    'Year': 'year',
+    'Year (desc)': 'year:desc',
+    'Release Date': 'originallyAvailableAt',
+    'Release Date (desc)': 'originallyAvailableAt:desc',
+    'Critic Rating': 'rating',
+    'Critic Rating (desc)': 'rating:desc',
+    'Audience Rating': 'audienceRating',
+    'Audience Rating (desc)': 'audienceRating:desc',
+    'Rating': 'userRating',
+    'Rating (desc)': 'userRating:desc',
+    'Content Rating': 'contentRating',
+    'Content Rating (desc)': 'contentRating:desc',
+    'Duration': 'duration',
+    'Duration (desc)': 'duration:desc',
+    'Progress': 'viewOffset',
+    'Progress (desc)': 'viewOffset:desc',
+    'Plays': 'viewCount',
+    'Plays (desc)': 'viewCount:desc',
+    'Date Added': 'addedAt',
+    'Date Added (desc)': 'addedAt:desc',
+    'Date Viewed': 'lastViewedAt',
+    'Date Viewed (desc)': 'lastViewedAt:desc',
+    'ResolutionSelected': 'mediaHeight',
+    'ResolutionSelected (desc)': 'mediaHeight:desc',
+    'Bitrate': 'mediaBitrate',
+    'Bitrate (desc)': 'mediaBitrate:desc',
+    'Randomly': 'random',
+}
+
 
 async def check_server_connection(
     *,
@@ -41,6 +73,7 @@ async def get_section_media(
     section_id: str,
     skip: int,
     search: str,
+    sort: str,
 ) -> list[PlexMediaMeta]:
     params = {
         'includeGuids': 1,
@@ -50,6 +83,8 @@ async def get_section_media(
     }
     if search:
         params['title'] = search
+    if sort:
+        params['sort'] = SORT_OPTIONS[sort]
     json = await get_json(
         client=client,
         url=url / 'library/sections' / section_id / 'all',

@@ -24,6 +24,7 @@ from plexio.models.stremio import (
 )
 from plexio.models.utils import plexio_id_to_guid
 from plexio.plex.media_server_api import (
+    SORT_OPTIONS,
     get_all_episodes,
     get_media,
     get_section_media,
@@ -59,6 +60,7 @@ async def get_manifest(
                     extra=[
                         {'name': 'skip', 'isRequired': False},
                         {'name': 'search', 'isRequired': False},
+                        {'name': 'sort', 'options': list(SORT_OPTIONS.keys())},
                     ],
                 ),
             )
@@ -96,11 +98,7 @@ async def get_manifest(
     response_model_exclude_none=True,
 )
 @router.get(
-    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/skip={skip}.json',
-    response_model_exclude_none=True,
-)
-@router.get(
-    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/search={search}.json',
+    '/{installation_id}/{base64_cfg}/catalog/{stremio_type}/{catalog_id}/{extra}.json',
     response_model_exclude_none=True,
 )
 async def get_catalog(
@@ -108,16 +106,17 @@ async def get_catalog(
     configuration: Annotated[AddonConfiguration, Depends(get_addon_configuration)],
     stremio_type: StremioMediaType,
     catalog_id: str,
-    skip: int = 0,
-    search: str = '',
+    extra: str = '',
 ) -> StremioCatalog:
+    extras = dict(e.split('=') for e in extra.split('&') if e)
     media = await get_section_media(
         client=http,
         url=configuration.discovery_url,
         token=configuration.access_token,
         section_id=catalog_id,
-        search=search,
-        skip=skip,
+        search=extras.get('search', ''),
+        skip=extras.get('skip', 0),
+        sort=extras.get('sort', 'Title'),
     )
     return StremioCatalog(
         metas=[m.to_stremio_meta_review(configuration) for m in media],
