@@ -29,9 +29,10 @@ const ConfigurationForm: FC<Props> = ({ servers }) => {
   const form = useForm<ConfigurationFormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      includeTranscodeOriginal: true,
+      includeTranscodeOriginal: false,
       includeTranscodeDown: false,
       includePlexTv: false,
+      sections: [],
     },
   });
 

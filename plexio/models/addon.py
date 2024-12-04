@@ -16,7 +16,7 @@ class AddonConfiguration(BaseModel):
     streaming_url: URL
     server_name: str
     version: str = '0.0.1'
-    sections: list[PlexLibrarySection]
+    sections: list[PlexLibrarySection] = Field(default_factory=list)
     include_transcode_original: bool = False
     include_transcode_down: bool = False
     transcode_down_qualities: list[Resolution] = Field(default_factory=list)

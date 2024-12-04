@@ -11,8 +11,7 @@ export const formSchema = z.object({
         title: z.string(),
         type: z.string(),
       }),
-    )
-    .min(1),
+    ),
   includeTranscodeOriginal: z.boolean(),
   includeTranscodeDown: z.boolean(),
   transcodeDownQualities: z.array(z.string()).optional(),
