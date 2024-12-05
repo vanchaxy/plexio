@@ -14,7 +14,7 @@ class Resolution(str, Enum):
 
 
 RESOLUTION_QUALITY_PARAMS = {
-    Resolution.R480: {
+    Resolution.R1080: {
         'name': '1080p',
         'min_width': 1920,
         'plex_args': {
@@ -32,7 +32,7 @@ RESOLUTION_QUALITY_PARAMS = {
             'videoResolution': '1280x720',
         },
     },
-    Resolution.R1080: {
+    Resolution.R480: {
         'name': '480p',
         'min_width': 640,
         'plex_args': {
