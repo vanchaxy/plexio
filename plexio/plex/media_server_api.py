@@ -11,8 +11,6 @@ from plexio.models.plex import (
 from plexio.plex.utils import get_json
 from plexio.settings import settings
 
-PLEX_CACHE_TTL = 24 * 60 * 60
-
 SORT_OPTIONS = {
     'Title': 'title',
     'Title (desc)': 'title:desc',
@@ -247,5 +245,5 @@ async def stremio_to_plex_id(
             return None
 
     if plex_id:
-        await cache.set(stremio_id, plex_id, ex=PLEX_CACHE_TTL)
+        await cache.set(stremio_id, plex_id)
     return plex_id

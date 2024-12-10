@@ -5,6 +5,8 @@ from enum import Enum
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
+PLEX_CACHE_TTL = 24 * 60 * 60
+
 
 def init_cache(settings):
     if settings.cache_type is CacheType.memory:
@@ -57,7 +59,7 @@ class RedisCache(AbstractCache):
     async def set(self, key, value):
         for _ in range(RedisCache.RETRY_TIMES):
             try:
-                await self._redis.set(key, value)
+                await self._redis.set(key, value, ex=PLEX_CACHE_TTL)
             except RedisConnectionError:
                 await asyncio.sleep(RedisCache.RETRY_BACKOFF_SEC)
 
