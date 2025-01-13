@@ -76,21 +76,28 @@ export const DiscoveryUrlField: FC<Props> = ({ form, server }) => {
                   <SelectValue placeholder="Select a discovery url" />
                 </SelectTrigger>
               </FormControl>
-              {server.connections.filter((conn: any) => !conn.local).length >
-                0 && (
+              {server.connections.length > 0 && (
                 <SelectContent>
-                  {server.connections
-                    .filter((conn: any) => !conn.local)
-                    .map((conn: any, index: number) => (
-                      <SelectItem key={index} value={conn.uri}>
-                        {conn.relay && (
-                          <Badge className="mr-1.5" variant="secondary">
-                            relay
-                          </Badge>
-                        )}
-                        {`${conn.address}:${conn.port}`}
-                      </SelectItem>
-                    ))}
+                  {server.connections.map((conn: any, index: number) => (
+                    <SelectItem key={index} value={conn.uri}>
+                      {conn.local && (
+                        <Badge className="mr-1.5" variant="secondary">
+                          local
+                        </Badge>
+                      )}
+                      {conn.relay && (
+                        <Badge className="mr-1.5" variant="secondary">
+                          relay
+                        </Badge>
+                      )}
+                      {!conn.local && !conn.relay && (
+                        <Badge className="mr-1.5" variant="secondary">
+                          public
+                        </Badge>
+                      )}
+                      {`${conn.address}:${conn.port}`}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               )}
             </Select>
@@ -108,7 +115,7 @@ export const DiscoveryUrlField: FC<Props> = ({ form, server }) => {
             </Button>
           </div>
           <FormDescription>
-            Select the public URL of your Plex server.
+            Select the public or local URL of your Plex server.
           </FormDescription>
           <FormMessage />
         </FormItem>
