@@ -33,6 +33,7 @@ If you'd prefer to self-host Plexio, you can do so easily using Docker. Follow t
 * *REDIS_URL*: URL for a Redis instance if you use `redis` cache (default: `redis://redis:6399/0`).
 * *PLEX_MATCHING_TOKEN*: Auth token for Plex media matching (default: `None`).
 * *SENTRY_DSN*: DSN for error tracking with Sentry (default: `None`).
+* *LOCAL_DISCOVERY*: Show local network Plex server addresses (default: `false`).
 
 ### Using addon with shared Plex server
 If you are using Plexio with a Plex server that you do not own (you will see a "shared" badge 

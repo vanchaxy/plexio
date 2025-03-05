@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const PLEX_PRODUCT_NAME = 'Plexio';
 const PLEX_API_URL = 'https://plex.tv/api/v2';
+const DEFAULT_LOCAL_DISCOVERY: boolean = false;
 
 export const createAuthPin = async (
   clientIdentifier: string,
@@ -80,10 +81,27 @@ export const getPlexServers = async (
       throw new Error('Invalid response from server');
     }
 
-    return response.data.filter(
+    const servers = response.data.filter(
       (server: any) =>
         server.provides.includes('server') && 'accessToken' in server,
     );
+
+    const localDiscovery: boolean =
+      window.env && window.env.VITE_LOCAL_DISCOVERY
+        ? window.env.VITE_LOCAL_DISCOVERY === 'true'
+        : DEFAULT_LOCAL_DISCOVERY;
+
+    if (!localDiscovery) {
+      servers.forEach((server: any) => {
+        if (server.connections && Array.isArray(server.connections)) {
+          server.connections = server.connections.filter(
+            (connection: any) => !connection.local,
+          );
+        }
+      });
+    }
+
+    return servers;
   } catch (error) {
     console.error('Error fetching Plex servers:', error);
     throw error;
