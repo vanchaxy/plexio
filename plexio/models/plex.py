@@ -4,7 +4,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from plexio.models.utils import get_flag_emoji, guid_to_plexio_id, to_camel, plexio_id_to_guid
+from plexio.models.utils import get_flag_emoji, guid_to_plexio_id, to_camel
 
 
 class Resolution(str, Enum):
@@ -330,7 +330,7 @@ class PlexEpisodeMeta(BaseModel):
             )
 
         return StremioVideoMeta(
-            id=self.guid,
+            id=guid_to_plexio_id(self.guid),
             title=self.title,
             released=released,
             thumbnail=str(

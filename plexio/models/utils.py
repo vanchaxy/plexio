@@ -1,3 +1,5 @@
+import base64
+
 LANGUAGE_TO_EMOJI = {
     'ps': '🇵🇰',
     'uz': '🇺🇿',
@@ -115,6 +117,8 @@ LANGUAGE_TO_EMOJI = {
     'nd': '🇿🇦',
 }
 
+PLEXIO_PREFIX = 'plexio:'
+
 
 def get_flag_emoji(code):
     return LANGUAGE_TO_EMOJI.get(code, code)
@@ -126,10 +130,12 @@ def to_camel(string: str) -> str:
 
 
 def guid_to_plexio_id(guid: str) -> str:
-    schema, key = guid.split('://')
-    return f'plexio:{schema}:{key}'
+    encoded_guid = base64.urlsafe_b64encode(guid.encode()).rstrip(b'=').decode()
+    return PLEXIO_PREFIX + encoded_guid
 
 
 def plexio_id_to_guid(plexio_id: str) -> str:
-    _, schema, key = plexio_id.split(':')
-    return f'{schema}://{key}'
+    encoded_guid = plexio_id[len(PLEXIO_PREFIX):]
+    padding = 4 - (len(encoded_guid) % 4)
+    encoded_guid += '=' * padding
+    return base64.urlsafe_b64decode(encoded_guid).decode()
