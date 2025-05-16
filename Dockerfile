@@ -22,4 +22,7 @@ RUN pip install -e . --no-cache-dir
 
 COPY --from=build /app/dist frontend
 
+COPY entrypoint.sh /docker-entrypoint.d/entrypoint.sh
+RUN chmod +x /docker-entrypoint.d/entrypoint.sh
+
 COPY unit-nginx-config.json /docker-entrypoint.d/config.json
