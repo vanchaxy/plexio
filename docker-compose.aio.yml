@@ -1,0 +1,8 @@
+services:
+  plexio:
+    image: ghcr.io/vanchaxy/plexio:latest
+    ports:
+      - "7777:80"
+    environment:
+      CACHE_TYPE: memory
+    restart: unless-stopped
