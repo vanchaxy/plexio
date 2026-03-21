@@ -15,11 +15,17 @@ def get_http_client(request: Request) -> ClientSession:
 def get_cache(request: Request):
     return request.state.cache
 
+def base64_url_decode(base64_cfg: str) -> bytes:
+    padding = len(base64_cfg) % 4
+    if padding:
+        base64_cfg += '=' * (4 - padding)
+    
+    return base64.urlsafe_b64decode(base64_cfg)
 
 def get_addon_configuration(base64_cfg: str | None = None) -> AddonConfiguration | None:
     if base64_cfg is None:
         return None
-    decoded = base64.b64decode(base64_cfg)
+    decoded = base64_url_decode(base64_cfg)
     configuration = AddonConfiguration(**json.loads(decoded))
     return configuration
 
