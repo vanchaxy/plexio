@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { encode as base64_encode } from 'js-base64';
+import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -49,7 +49,7 @@ const ConfigurationForm: FC<Props> = ({ servers }) => {
       sections.find((s) => s.key === item.key),
     );
 
-    const encodedConfiguration = base64_encode(JSON.stringify(configuration));
+    const encodedConfiguration = Base64.encodeURI(JSON.stringify(configuration));
     const addonUrl = `${window.location.origin}/${uuidv4()}/${encodedConfiguration}/manifest.json`;
 
     if (event.nativeEvent.submitter.name === 'clipboard') {
