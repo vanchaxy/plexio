@@ -7,11 +7,17 @@ export const createAuthPin = async (
   clientIdentifier: string,
 ): Promise<AuthPin> => {
   try {
-    const response = await axios.postForm(`${PLEX_API_URL}/pins`, {
-      strong: 'true',
-      'X-Plex-Product': PLEX_PRODUCT_NAME,
-      'X-Plex-Client-Identifier': clientIdentifier,
-    });
+    const response = await axios.postForm(
+      `${PLEX_API_URL}/pins`,
+      {
+        strong: 'true',
+        'X-Plex-Product': PLEX_PRODUCT_NAME,
+        'X-Plex-Client-Identifier': clientIdentifier,
+      },
+      {
+        headers: { Accept: 'application/json' },
+      },
+    );
 
     return response.data;
   } catch (error) {
@@ -30,6 +36,7 @@ export const getAuthToken = async (
         code: authPin.code,
         'X-Plex-Client-Identifier': clientIdentifier,
       },
+      headers: { Accept: 'application/json' },
     });
     return response.data.authToken;
   } catch (error) {
@@ -49,6 +56,7 @@ export const getPlexUser = async (
         'X-Plex-Client-Identifier': clientIdentifier,
         'X-Plex-Token': token,
       },
+      headers: { Accept: 'application/json' },
     });
 
     if (response.status !== 200) {
@@ -74,6 +82,7 @@ export const getPlexServers = async (
         'X-Plex-Token': token,
         'X-Plex-Client-Identifier': clientIdentifier,
       },
+      headers: { Accept: 'application/json' },
     });
 
     if (!response.data || !Array.isArray(response.data)) {
