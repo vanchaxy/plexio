@@ -2,16 +2,22 @@ import axios from 'axios';
 
 const PLEX_PRODUCT_NAME = 'Plexio';
 const PLEX_API_URL = 'https://plex.tv/api/v2';
+// Plex's v2 API defaults to XML unless JSON is explicitly requested.
+const JSON_HEADERS = { Accept: 'application/json' };
 
 export const createAuthPin = async (
   clientIdentifier: string,
 ): Promise<AuthPin> => {
   try {
-    const response = await axios.postForm(`${PLEX_API_URL}/pins`, {
-      strong: 'true',
-      'X-Plex-Product': PLEX_PRODUCT_NAME,
-      'X-Plex-Client-Identifier': clientIdentifier,
-    });
+    const response = await axios.postForm(
+      `${PLEX_API_URL}/pins`,
+      {
+        strong: 'true',
+        'X-Plex-Product': PLEX_PRODUCT_NAME,
+        'X-Plex-Client-Identifier': clientIdentifier,
+      },
+      { headers: JSON_HEADERS },
+    );
 
     return response.data;
   } catch (error) {
@@ -30,6 +36,7 @@ export const getAuthToken = async (
         code: authPin.code,
         'X-Plex-Client-Identifier': clientIdentifier,
       },
+      headers: JSON_HEADERS,
     });
     return response.data.authToken;
   } catch (error) {
@@ -49,6 +56,7 @@ export const getPlexUser = async (
         'X-Plex-Client-Identifier': clientIdentifier,
         'X-Plex-Token': token,
       },
+      headers: JSON_HEADERS,
     });
 
     if (response.status !== 200) {
@@ -74,6 +82,7 @@ export const getPlexServers = async (
         'X-Plex-Token': token,
         'X-Plex-Client-Identifier': clientIdentifier,
       },
+      headers: JSON_HEADERS,
     });
 
     if (!response.data || !Array.isArray(response.data)) {
