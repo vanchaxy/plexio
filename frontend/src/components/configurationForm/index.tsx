@@ -25,6 +25,29 @@ interface Props {
   servers: PlexServer[];
 }
 
+// navigator.clipboard is unavailable on insecure (http) origins and can reject
+// when the user gesture has expired, so fall back to a hidden textarea.
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return;
+  } catch {
+    // fall through to legacy path
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
 const ConfigurationForm: FC<Props> = ({ servers }) => {
   const form = useForm<ConfigurationFormType>({
     resolver: zodResolver(formSchema),
@@ -53,7 +76,7 @@ const ConfigurationForm: FC<Props> = ({ servers }) => {
     const addonUrl = `${window.location.origin}/${uuidv4()}/${encodedConfiguration}/manifest.json`;
 
     if (event.nativeEvent.submitter.name === 'clipboard') {
-      navigator.clipboard.writeText(addonUrl);
+      copyToClipboard(addonUrl);
     } else {
       window.location.href = addonUrl.replace(/https?:\/\//, 'stremio://');
     }
